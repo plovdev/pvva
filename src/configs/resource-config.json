@@ -1,0 +1,43 @@
+{
+    "base-url": "http://9porno365.info",
+    "main": {
+        "supports": true,
+        "endpoint": "/",
+        "main-search": {
+            "supports": true,
+            "endpoint": "search/${user-input}/popular/"
+        }
+    },
+    "models": {
+        "support": true,
+        "endpoint": "/models",
+        "model": {
+            "supports": true,
+            "endpoint": "/models/${model}"
+        },
+        "model-search": {
+            "supports": true,
+            "endpoint": "/?do=ajax&action=searchModel&model=${user-input}"
+        }
+    },
+    "categories": {
+        "supports": true,
+        "endpoint": "/categories",
+        "category": {
+            "supports": true,
+            "endpoint": "/categories/${category}"
+        }
+    },
+    "video": {
+        "supports": true,
+        "endpoint": "/movie/${video-id}"
+    },
+    "mirrors": {
+        "supports": true,
+        "urls": [
+            "http://my.porno365.bike",
+            "http://5porno365.net",
+            "http://1porno365.info"
+        ]
+    }
+}

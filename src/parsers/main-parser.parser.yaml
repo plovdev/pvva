@@ -1,0 +1,35 @@
+name: "models-parser"
+version: "1.0"
+description: "Parse models from page"
+
+parsing:
+  models:
+    selector: "div.item_model"
+    fields:
+      url:
+        selector: "a[href]"
+        rule:
+          attribute: "abs:href"
+
+      country:
+        selector: "span.flag"
+        rule:
+          attribute: "class"
+          rule: "-(\\w+)$"
+
+      avatar:
+        selector: "img"
+        rule:
+          attribute: "src"
+
+      videos:
+        rule:
+          selector: "span.cnt_span"
+
+      names:
+        selector: "span.model_name"
+        fields:
+          rus:
+            rule: "span.model_rus_name"
+          eng:
+            rule: "span.model_eng_name"

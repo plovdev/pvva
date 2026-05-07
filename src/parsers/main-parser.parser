@@ -1,0 +1,53 @@
+import groovy.json.JsonOutput
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
+
+String getAllVideos(String html) {
+    Document doc = Jsoup.parse(html)
+    def cards = []
+
+    def elements = doc.select("li.video_block")
+    elements.each { element ->
+        try {
+            cards.add(parseVideoBlock(element))
+        } catch (Exception e) {
+            println "Error parsing element: ${e.message}"
+        }
+    }
+
+    return JsonOutput.toJson([videos: cards, count: cards.size()])
+}
+
+private static Map parseVideoBlock(Element videoElement) {
+    def cardId = videoElement.id() as String
+
+    def link = videoElement.selectFirst("a.image")
+    def url = link.attr("abs:href")
+
+    def img = link.selectFirst("img")
+    def pic = img.attr("abs:src")
+
+    def titleElement = link.selectFirst("p")
+    def title = titleElement.text()
+
+    def durationElement = videoElement.selectFirst("span.duration")
+    def duration = durationElement.text()
+
+    def viewsElement = videoElement.selectFirst("span.video_views")
+    def views = Integer.parseInt(viewsElement.text().replace(",", ""))
+
+    def ratingElement = videoElement.selectFirst("span.mini-rating")
+    def rating = ratingElement.text()
+
+
+    return [
+            id      : cardId,
+            title   : title,
+            url     : url,
+            pic     : pic,
+            duration: duration,
+            views   : views,
+            rating  : rating
+    ]
+}
