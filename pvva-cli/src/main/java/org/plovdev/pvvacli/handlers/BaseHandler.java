@@ -1,5 +1,6 @@
 package org.plovdev.pvvacli.handlers;
 
+import org.jspecify.annotations.NonNull;
 import org.plovdev.commaidle.commands.Command;
 import org.plovdev.commaidle.commands.CommandInfo;
 import org.plovdev.commaidle.commands.handlers.CommandHandler;
@@ -23,13 +24,14 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 public class BaseHandler extends CommandHandler {
     private static final Logger log = LoggerFactory.getLogger(BaseHandler.class);
 
     @Command("build")
-    public static void build(CommandInfo info) {
+    public static void build(@NonNull CommandInfo info) {
         boolean isSuccessful = false;
 
         String pluginJsonRaw = PvvaPaths.allString(PvvaPaths.PLUGIN_JSON);
@@ -38,6 +40,12 @@ public class BaseHandler extends CommandHandler {
         int buildId = (int) (System.currentTimeMillis() / 1000);
         BuildXml buildXml = BuildXmlParser.parse(PvvaPaths.BUILD_XML);
         String pluginId = buildXml.getPluginId();
+        String finalName = buildXml.getFinalName() + ".pvva";
+
+        if (info.hasFlag("re")) {
+            PvvaPaths.delete(PvvaPaths.BUILDS_OUT.resolve(finalName));
+        }
+
         PVVAHeader header = new PVVAHeader((byte) 1, (byte) buildXml.getFlag(), buildId, (byte) pluginId.length(), pluginId, BuildXml.versionToInt(buildXml.getMinAppVersion()), BuildXml.versionToInt(buildXml.getMaxAppVersion()), pluginJsonBytes.length);
 
         PluginJson pluginJson = null;
@@ -73,17 +81,35 @@ public class BaseHandler extends CommandHandler {
             }
         }
 
-        try (PVVAWriter writer = new PVVAWriter(Path.of("builds", buildXml.getFinalName() + ".pvva"))) {
+        try (PVVAWriter writer = new PVVAWriter(PvvaPaths.BUILDS_OUT.resolve(finalName))) {
             writer.writeVideoAdapter(host);
             isSuccessful = true;
         } catch (Exception e) {
             log.error("Error to write pvva addapter: ", e);
         }
 
+        if (buildXml.needCreateInfo()) {
+            InfoCreator.createPluginInfo(finalName, buildXml.getUrl(), header);
+            log.info("Info created");
+        }
+
         if (isSuccessful) {
             log.info("Adapter packed successful");
         } else {
             log.warn("Adapter was not packed success");
+            return;
         }
+
+        info.getSubCommand("install").ifPresent(installInfo -> {
+            Path from = PvvaPaths.BUILDS_OUT.resolve(finalName);
+            Path to = PvvaPaths.PLUGINS_HOME.resolve(finalName);
+            if (installInfo.hasFlag("re") || info.hasFlag("re")) {
+                PvvaPaths.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
+                log.info("Re Installed");
+            } else {
+                PvvaPaths.copy(from, to);
+                log.info("Installed");
+            }
+        });
     }
 }

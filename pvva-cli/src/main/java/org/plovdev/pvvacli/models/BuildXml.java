@@ -11,6 +11,8 @@ public class BuildXml {
     private int flag;
     private String finalName;
     private String sign;
+    private boolean createInfo;
+    private String url;
 
     public String getPluginId() {
         return pluginId;
@@ -76,6 +78,22 @@ public class BuildXml {
         this.sign = sign;
     }
 
+    public boolean needCreateInfo() {
+        return createInfo;
+    }
+
+    public void setCreateInfo(boolean createInfo) {
+        this.createInfo = createInfo;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public static int versionToInt(@NonNull String version) {
         String[] parts = version.split("\\.");
         int major = Integer.parseInt(parts[0]);
@@ -95,7 +113,7 @@ public class BuildXml {
 
     @Override
     public String toString() {
-        return "PluginXml{" +
+        return "BuildXml{" +
                 "pluginId='" + pluginId + '\'' +
                 ", minAppVersion='" + minAppVersion + '\'' +
                 ", maxAppVersion='" + maxAppVersion + '\'' +
@@ -104,6 +122,7 @@ public class BuildXml {
                 ", flag=" + flag +
                 ", finalName='" + finalName + '\'' +
                 ", sign='" + sign + '\'' +
+                ", createInfo=" + createInfo +
                 '}';
     }
 }

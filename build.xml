@@ -6,5 +6,9 @@
     </properties>
     <build>
         <final-name>Porn365</final-name>
+        <create-info>true</create-info>
+        <url>
+            https://raw.githubusercontent.com/anton-1488/PornViewer/refs/heads/pv-legacy/plugins/files/Porn365.pvva
+        </url>
     </build>
 </plugin>

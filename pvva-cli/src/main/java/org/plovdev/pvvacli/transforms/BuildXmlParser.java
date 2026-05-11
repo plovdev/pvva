@@ -34,6 +34,9 @@ public class BuildXmlParser {
 
             buildXml.setFinalName(getElementText(doc, "final-name"));
             buildXml.setSign(getElementText(doc, "sign"));
+
+            buildXml.setCreateInfo(Boolean.parseBoolean(getElementText(doc, "create-info")));
+            buildXml.setUrl(getElementText(doc, "url"));
             return buildXml;
         } catch (Exception e) {
             throw new RuntimeException(e);
