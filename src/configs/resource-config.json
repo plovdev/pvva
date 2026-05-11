@@ -2,15 +2,15 @@
     "base-url": "http://9porno365.info",
     "main": {
         "supports": true,
-        "endpoint": "/",
+        "endpoint": "/${page}",
         "main-search": {
             "supports": true,
-            "endpoint": "search/${user-input}/popular/"
+            "endpoint": "/search/${user-input}/popular/${page}"
         }
     },
     "models": {
         "support": true,
-        "endpoint": "/models",
+        "endpoint": "/models/${page}",
         "model": {
             "supports": true,
             "endpoint": "/models/${model}"
@@ -22,7 +22,7 @@
     },
     "categories": {
         "supports": true,
-        "endpoint": "/categories",
+        "endpoint": "/categories/${page}",
         "category": {
             "supports": true,
             "endpoint": "/categories/${category}"

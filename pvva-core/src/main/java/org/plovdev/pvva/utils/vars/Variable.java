@@ -6,10 +6,10 @@ import java.util.NoSuchElementException;
 
 public enum Variable {
     USER_INPUT("user-input"),
-    MODEL("model"),
     CATEGORY("category"),
     MODEL_NAME("model-name"),
-    VIDEO_ID("video-id");
+    VIDEO_ID("video-id"),
+    PAGE("page");
 
     public static @NonNull Variable ofName(String name) {
         for (Variable variable : values()) {

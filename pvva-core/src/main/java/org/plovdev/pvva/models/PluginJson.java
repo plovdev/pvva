@@ -49,8 +49,8 @@ public final class PluginJson {
         return version;
     }
 
-    //===NULLABLE===\\
 
+    //===NULLABLE===\\
 
     public @NonNull Optional<String> description() {
         return Optional.ofNullable(description);

@@ -6,7 +6,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Optional;
 
 public final class HttpConfig {
-    private final String httpClient;
+    private final HttpClientType httpClient;
     private final HeadersConfig headersConfig;
     private final RetryPolicy retryPolicy;
 
@@ -17,7 +17,7 @@ public final class HttpConfig {
     private final int retryCount;
 
     public HttpConfig(
-            @Nullable String httpClient,
+            @Nullable HttpClientType httpClient,
             @Nullable HeadersConfig headersConfig,
             @Nullable RetryPolicy retryPolicy,
             long connectTimeout,
@@ -37,8 +37,8 @@ public final class HttpConfig {
         this.retryCount = retryCount;
     }
 
-    public @NonNull Optional<String> httpClient() {
-        return Optional.ofNullable(httpClient);
+    public @NonNull HttpClientType httpClient() {
+        return httpClient == null ? HttpClientType.OK_HTTP_CLIENT : httpClient;
     }
 
     public @NonNull Optional<HeadersConfig> headersConfig() {

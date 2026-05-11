@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.jspecify.annotations.NonNull;
 import org.plovdev.pvva.models.configs.httpconfig.HeadersConfig;
+import org.plovdev.pvva.models.configs.httpconfig.HttpClientType;
 import org.plovdev.pvva.models.configs.httpconfig.HttpConfig;
 import org.plovdev.pvva.models.configs.httpconfig.RetryPolicy;
 import org.slf4j.Logger;
@@ -63,14 +64,14 @@ public final class HttpConfigTransformer {
         long retryDelay = retry.has("retry-delay") ? retry.get("retry-delay").getAsLong() : 0;
         int retryCount = retry.has("retry-count") ? retry.get("retry-count").getAsInt() : 0;
 
-        return new HttpConfig(httpClient, headersConfig, retryPolicy, connectTimeout, readTimeout, writeTimeout, retryDelay, retryCount);
+        return new HttpConfig(HttpClientType.safeValueOf(httpClient), headersConfig, retryPolicy, connectTimeout, readTimeout, writeTimeout, retryDelay, retryCount);
     }
 
     public static String toJson(@NonNull HttpConfig config) {
         JsonObject root = new JsonObject();
 
         // HTTP client
-        config.httpClient().ifPresent(client -> root.addProperty("http-client", client));
+        root.addProperty("http-client", config.httpClient().name());
 
         // Headers config
         JsonObject headersObj = new JsonObject();
