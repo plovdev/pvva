@@ -1,5 +1,5 @@
 {
-    "http-client": "OK_HTTP",
+    "http-client": "OK_HTTP_CLIENT",
     "headers": {
         "set": [
             {

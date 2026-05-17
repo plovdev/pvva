@@ -1,7 +1,7 @@
 {
     "commons": {
         "title": "Porn365 adapter",
-        "version": "1.0.1",
+        "version": "1.0.5",
         "description": "PornViewer Adapter for porn365 site. Provides all needly resources for PornViewer."
     },
     "auto-update": {

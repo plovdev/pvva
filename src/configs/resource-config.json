@@ -22,7 +22,7 @@
     },
     "categories": {
         "supports": true,
-        "endpoint": "/categories/${page}",
+        "endpoint": "/categories",
         "category": {
             "supports": true,
             "endpoint": "/categories/${category}"

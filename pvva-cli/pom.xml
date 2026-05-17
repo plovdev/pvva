@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.plovdev</groupId>
             <artifactId>pvva-core</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
