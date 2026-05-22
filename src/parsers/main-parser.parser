@@ -77,44 +77,43 @@ return tonumber(num) or 0
 end
 
 -- Парсинг списка видео с главной страницы
-function parseVideos(html)
+function parseVideos(htmlstr)
 local videos = {}
+local doc = html.parse(htmlstr)
+local elements = doc.select("li.video_block")
 
--- Ищем все блоки li.video_block
-local pattern = '<li[^>]*id="(%d+)"[^>]*>(.-)</li>'
-local pos = 1
+for i = 1, #elements do
+local block = elements[i]
 
-while true do
-local startIdx, endIdx, videoId, videoContent = string.find(html, pattern, pos)
-if not startIdx then break end
+local link = block.selectFirst("a.image")
+if not link then goto continue end
 
--- Ссылка на страницу видео
-local url = string.match(videoContent, '<a[^>]*class="image"[^>]*href="([^"]+)"')
+local url = link.attr("abs:href")
+if not url then goto continue end
 
--- Ссылка на превью
-local picture = string.match(videoContent, '<img[^>]*src="([^"]+)"')
+local img = link.selectFirst("img")
+local picture = img and img.attr("src") or ""
 
--- Название видео
-local title = string.match(videoContent, '<p>([^<]+)</p>')
+local title = block.selectFirst("p")
+local titleText = title and title.text() or ""
+if titleText == "" then goto continue end
 
--- Длительность
-local durationRaw = string.match(videoContent, '<span[^>]*class="duration"[^>]*>([^<]+)</span>')
-local duration = parseDuration(durationRaw)
+local videoId = block.id() or ""
 
--- Просмотры
-local viewsRaw = string.match(videoContent, '<span[^>]*class="video_views"[^>]*>([^<]+)</span>')
-local views = parseViews(viewsRaw)
+local durationSpan = block.selectFirst("span.duration")
+local duration = parseDuration(durationSpan and durationSpan.text() or "")
 
--- Рейтинг
-local ratingRaw = string.match(videoContent, '<span[^>]*class="mini-rating"[^>]*>([^<]+)</span>')
-local ratingValue = parseRating(ratingRaw)
+local viewsSpan = block.selectFirst("span.video_views")
+local views = parseViews(viewsSpan and viewsSpan.text() or "")
 
-if url and title then
+local ratingSpan = block.selectFirst("span.mini-rating")
+local ratingValue = parseRating(ratingSpan and ratingSpan.text() or "")
+
 table.insert(videos, {
 id = videoId,
-title = title,
+title = titleText,
 url = url,
-picture = picture or "",
+picture = picture,
 duration = duration,
 views = views,
 rating = {
@@ -122,262 +121,230 @@ rating = ratingValue,
 ratingType = "PERCENTAGE"
 }
 })
-end
 
-pos = endIdx + 1
+::continue::
 end
 
 return encodeJSON(videos)
 end
 
 -- Парсинг категорий из верхнего меню
-function parseCategories(html)
+function parseCategories(htmlstr)
 local categories = {}
+local doc = html.parse(htmlstr)
 
--- Ищем ссылки в меню: div ul.top-menu li a[href]
-  local pattern = '<a[^>]*href="([^"]+)"[^>]*>([^<]+)</a>'
-  local pos = 1
-  
-  while true do
-  local startIdx, endIdx, url, name = string.find(html, pattern, pos)
-  if not startIdx then break end
-  
-  -- Проверяем, что это категория (не главная страница и не пустая)
-  if url and name and name ~= "" and not string.find(name, "Home") then
-  table.insert(categories, {
-  name = name,
-  url = url
-  })
-  end
-  
-  pos = endIdx + 1
-  end
-  
-  return encodeJSON(categories)
-  end
-  
-  -- Парсинг списка моделей
-  function parseModels(html)
-  local models = {}
-  
-  -- Ищем блоки div.item_model
-  local pattern = '<div[^>]*class="[^"]*item_model[^"]*"[^>]*>(.-)</div>'
-  local pos = 1
-  
-  while true do
-  local startIdx, endIdx, blockContent = string.find(html, pattern, pos)
-  if not startIdx then break end
-  
-  local model = {}
-  
-  -- URL модели
-  local url = string.match(blockContent, '<a[^>]*href="([^"]+)"')
-  if url then
-  model.url = url
-  end
-  
-  -- Аватар
-  local avatar = string.match(blockContent, '<img[^>]*src="([^"]+)"')
-  if avatar then
-  model.avatar = avatar
-  end
-  
-  -- Страна (из класса flag)
-  local flagClass = string.match(blockContent, '<span[^>]*class="([^"]*flag[^"]*)"')
-  if flagClass then
-  local country = string.match(flagClass, "%-([^%-]+)$")
-  if country then
-  model.country = country
-  end
-  end
-  
-  -- Количество видео
-  local videoCountRaw = string.match(blockContent, '<span[^>]*class="cnt_span"[^>]*>([^<]+)</span>')
-  if videoCountRaw then
-  model.videoCount = tonumber(videoCountRaw) or 0
-  end
-  
-  -- Имя модели (сначала английское, потом русское)
-  local name = string.match(blockContent, '<span[^>]*class="model_eng_name"[^>]*>([^<]+)</span>')
-  if not name then
-  name = string.match(blockContent, '<span[^>]*class="model_rus_name"[^>]*>([^<]+)</span>')
-  end
-  
-  if name then
-  model.name = name
-  end
-  
-  if model.name and model.url then
-  table.insert(models, model)
-  end
-  
-  pos = endIdx + 1
-  end
-  
-  return encodeJSON(models)
-  end
-  
-  -- Парсинг детальной страницы видео
-  function parseVideoPage(html)
-  local video = {
-  comments = {},
-  qualityMap = {},
-  timecodes = {},
-  tagLinks = {},
-  modelsLinks = {},
-  categories = {}
+local topMenu = doc.select("ul.top-menu li a")
+for i = 1, #topMenu do
+local link = topMenu[i]
+local name = link.text()
+local url = link.attr("abs:href")
+
+if name ~= "Все категории" and name ~= "" then
+table.insert(categories, {
+name = name,
+url = url
+})
+end
+end
+
+return encodeJSON(categories)
+end
+
+-- Парсинг списка моделей
+function parseModels(htmlstr)
+local models = {}
+local doc = html.parse(htmlstr)
+local items = doc.select("div.item_model")
+
+for i = 1, #items do
+local block = items[i]
+
+local link = block.selectFirst("a[href]")
+if not link then goto continue end
+
+local url = link.attr("abs:href")
+if not url then goto continue end
+
+local img = block.selectFirst("img")
+local avatar = img and img.attr("src") or ""
+
+local country = ""
+local flagSpan = block.selectFirst("span.flag")
+if flagSpan then
+local classAttr = flagSpan.attr("class")
+country = string.match(classAttr, "%-([^%-]+)$") or ""
+end
+
+local videoCountSpan = block.selectFirst("span.cnt_span")
+local videoCount = videoCountSpan and tonumber(videoCountSpan.text()) or 0
+
+local nameSpan = block.selectFirst("span.model_eng_name")
+if not nameSpan then
+nameSpan = block.selectFirst("span.model_rus_name")
+end
+local name = nameSpan and nameSpan.text() or ""
+
+if name ~= "" and url ~= "" then
+table.insert(models, {
+name = name,
+url = url,
+avatar = avatar,
+country = country,
+videoCount = videoCount
+})
+end
+
+::continue::
+end
+
+return encodeJSON(models)
+end
+
+-- Парсинг детальной страницы видео
+function parseVideoPage(htmlstr)
+local doc = html.parse(htmlstr)
+
+local video = {
+comments = {},
+qualityMap = {},
+timecodes = {},
+tagLinks = {},
+modelsLinks = {},
+categories = {}
 }
 
-  -- Парсим meta-теги
-    local metaPattern = '<meta[^>]*property="([^"]+)"[^>]*content="([^"]+)"'
-    local pos = 1
+-- Парсим meta-теги
+local metaTags = doc.select("head meta[property]")
+for i = 1, #metaTags do
+local meta = metaTags[i]
+local prop = meta.attr("property")
+local content = meta.attr("content")
 
-    while true do
-    local startIdx, endIdx, prop, content = string.find(html, metaPattern, pos)
-    if not startIdx then break end
-    
-    if prop == "og:title" then
-    video.title = content
-    elseif prop == "og:url" then
-    video.videoUri = content
-    -- Извлекаем ID из URL (после последнего /)
-    local lastSlash = string.match(content, "/([^/]+)$")
-    if lastSlash then
-    video.videoId = lastSlash
-    else
-    video.videoId = string.sub(content, 30)
-    end
-    elseif prop == "og:duration" then
-    local seconds = tonumber(content)
-    if seconds then
-    video.videoDuration = string.format("PT%sS", seconds)
-    end
-    elseif prop == "og:description" then
-    video.description = content
-    elseif prop == "og:image" then
-    video.previewUrl = content
-    end
-    
-    pos = endIdx + 1
-    end
+if prop == "og:title" then
+video.title = content
+elseif prop == "og:url" then
+video.videoUri = content
+local lastSlash = string.match(content, "/([^/]+)$")
+video.videoId = lastSlash or string.sub(content, 30)
+elseif prop == "og:duration" then
+local seconds = tonumber(content)
+if seconds then
+video.videoDuration = string.format("PT%sS", seconds)
+end
+elseif prop == "og:description" then
+video.description = content
+elseif prop == "og:image" then
+video.previewUrl = content
+end
+end
 
-    -- Рейтинг
-    local ratingValue = string.match(html, 'rating_score[^>]*>(%d+)%%')
-    if ratingValue then
-    video.rating = {
-    rating = tonumber(ratingValue),
-    ratingType = "PERCENTAGE"
+-- Рейтинг
+local ratingScore = doc.selectFirst(".rating_score")
+if ratingScore then
+local ratingValue = string.match(ratingScore.text(), "(%d+)%%")
+if ratingValue then
+video.rating = {
+rating = tonumber(ratingValue),
+ratingType = "PERCENTAGE"
 }
-    else
-    video.rating = { rating = 0, ratingType = "PERCENTAGE" }
-    end
+else
+video.rating = { rating = 0, ratingType = "PERCENTAGE" }
+end
+else
+video.rating = { rating = 0, ratingType = "PERCENTAGE" }
+end
 
-    -- Просмотры
-    local viewsValue = string.match(html, '<span[^>]*itemprop="interactionCount"[^>]*>([^<]+)</span>')
-    if viewsValue then
-    video.views = tonumber(viewsValue) or 0
-    else
-    video.views = 0
-    end
-  
-  -- Категории (ищем div с классом video-categories)
-  local catStart, catEnd = string.find(html, 'class="video%-categories"')
-  if catStart then
-  local linkPattern = '<a[^>]*href="([^"]+)"[^>]*>([^<]+)</a>'
-  local pos = catStart
-  while true do
-  local s, e, catUrl, catName = string.find(html, linkPattern, pos)
-  if not s then break end
-  if s > catEnd + 500 then break end
-  table.insert(video.categories, {
-  name = catName,
-  url = catUrl
-  })
-  pos = e + 1
-  end
-  end
-  
-  -- Модели
-  local modelLabel = string.find(html, 'Модели:')
-  if modelLabel then
-  local endDiv = string.find(html, '</div>', modelLabel)
-  if endDiv then
-  local modelBlock = string.sub(html, modelLabel, endDiv)
-  local linkPattern = '<a[^>]*href="([^"]+)"[^>]*>([^<]+)</a>'
-  local modelPos = 1
-  while true do
-  local s, e, modelUrl, modelName = string.find(modelBlock, linkPattern, modelPos)
-  if not s then break end
-  video.modelLiks[modelName] = modelUrl
-  modelPos = e + 1
-  end
-  end
-  end
+-- Просмотры
+local viewsSpan = doc.selectFirst("span[itemprop=interactionCount]")
+video.views = viewsSpan and tonumber(viewsSpan.text()) or 0
 
-    -- Теги (div.video-tags a[href])
-    local tagPattern = '<div[^>]*class="[^"]*video%-tags[^"]*"[^>]*>(.-)</div>'
-    local tagStart, tagEnd, tagBlock = string.find(html, tagPattern, 1)
-    if tagBlock then
-    local linkPattern = '<a[^>]*href="([^"]+)"[^>]*>([^<]+)</a>'
-    local tagPos = 1
-    while true do
-    local s, e, tagUrl, tagName = string.find(tagBlock, linkPattern, tagPos)
-    if not s then break end
-    if tagUrl and tagName then
-    video.tagLinks[tagName] = tagUrl
-    end
-    tagPos = e + 1
-    end
-    end
-  
-  -- Таймкоды (парсим секунды из onclick)
-  local timecodeStart = string.find(html, 'Таймкоды:')
-  if timecodeStart then
-  local blockEnd = string.find(html, '</div>', timecodeStart)
-  if blockEnd then
-  local tcBlock = string.sub(html, timecodeStart, blockEnd)
-  local pos = 1
-  while true do
--- Ищем pattern: текст - <span onclick="peremotka(237)">03:57</span>
-  local s, e, desc, seconds, timeStr = string.find(tcBlock, '([^<]-)%s*<span[^>]*peremotka%((%d+)%)([^>]*)>([^<]+)</span>', pos)
-  if not s then break end
-  
-  -- Очищаем описание от лишних символов
-  desc = string.gsub(desc, "^[%s;%-]+", "")
-  desc = string.gsub(desc, "[%s;%-]+$", "")
-  
-  if desc ~= "" and seconds then
-  table.insert(video.timecodes, {
-  time = string.format("PT%sS", seconds),
-  text = desc .. " - " .. timeStr
-  })
-  end
-  pos = e + 1
-  end
-  end
-  end
-  
-  -- После вставки timecode, чистим текст
-  for i, tc in ipairs(video.timecodes) do
-  tc.text = string.gsub(tc.text, "/span>", "")
-  tc.text = string.gsub(tc.text, "-", "")
-  end
+-- Категории
+local categoriesDiv = doc.selectFirst("div.video-categories")
+if categoriesDiv then
+local catLinks = categoriesDiv.select("a[href]")
+for i = 1, #catLinks do
+local cat = catLinks[i]
+local catName = cat.text()
+local catUrl = cat.attr("abs:href")
+if catName ~= "" then
+table.insert(video.categories, {
+name = catName,
+url = catUrl
+})
+end
+end
+end
 
-    -- Качество видео (div.quality_chooser a[href])
-    local qualityPattern = '<div[^>]*class="[^"]*quality_chooser[^"]*"[^>]*>(.-)</div>'
-    local qualityStart, qualityEnd, qualityBlock = string.find(html, qualityPattern, 1)
-    if qualityBlock then
-    local linkPattern = '<a[^>]*href="([^"]+)"[^>]*>([^<]+)</a>'
-    local qualityPos = 1
-    while true do
-    local s, e, qualityUrl, qualityName = string.find(qualityBlock, linkPattern, qualityPos)
-    if not s then break end
-    if qualityUrl and qualityName then
-    video.qualityMap[qualityName] = qualityUrl
-    end
-    qualityPos = e + 1
-    end
-    end
+-- Модели
+local modelsDiv = doc.selectFirst("div.video-models")
+if modelsDiv then
+local modelLinks = modelsDiv.select("a[href]")
+for i = 1, #modelLinks do
+local model = modelLinks[i]
+local modelName = model.text()
+local modelUrl = model.attr("abs:href")
+if modelName ~= "" then
+video.modelLiks[modelName] = modelUrl
+end
+end
+end
 
-    return encodeJSON(video)
-    end
+-- Теги
+local tagsDiv = doc.selectFirst("div.video-tags")
+if tagsDiv then
+local tagLinks = tagsDiv.select("a[href]")
+for i = 1, #tagLinks do
+local tag = tagLinks[i]
+local tagName = tag.text()
+local tagUrl = tag.attr("abs:href")
+if tagName ~= "" then
+video.tagLinks[tagName] = tagUrl
+end
+end
+end
+
+-- Таймкоды
+local timecodeDiv = doc.selectFirst("div.video-tags[data-nosnippet=true]")
+if timecodeDiv then
+local text = timecodeDiv.text()
+local pattern = "([^:]+)%s*%-%s*(%d+:%d+)"
+local pos = 1
+while true do
+local desc, timeStr = string.match(text, pattern, pos)
+if not desc then break end
+local parts = {}
+for part in string.gmatch(timeStr, "(%d+)") do
+table.insert(parts, part)
+end
+local seconds = 0
+if #parts == 2 then
+seconds = tonumber(parts[1]) * 60 + tonumber(parts[2])
+elseif #parts == 1 then
+seconds = tonumber(parts[1])
+end
+if desc and seconds > 0 then
+table.insert(video.timecodes, {
+time = string.format("PT%sS", seconds),
+text = string.gsub(desc, "^[%s;]+", "") .. " - " .. timeStr
+})
+end
+pos = string.find(text, timeStr, pos) + #timeStr
+end
+end
+
+-- Качество видео
+local qualityDiv = doc.selectFirst("div.quality_chooser")
+if qualityDiv then
+local qualityLinks = qualityDiv.select("a.choose")
+for i = 1, #qualityLinks do
+local q = qualityLinks[i]
+local qName = q.text()
+local qUrl = q.attr("href")
+if qName ~= "" and qUrl ~= "" then
+video.qualityMap[qName] = qUrl
+end
+end
+end
+
+return encodeJSON(video)
+end
