@@ -86,7 +86,7 @@ public class PVVAReader implements AutoCloseable {
         return new PVVAHeader(version, flag, buildId, idlength, pluginId, minAppVersion, maxAppVersion, pluginJsonSize);
     }
 
-    private PluginJson readPluginJson(@NonNull ByteBuffer buffer, int jsonSize) {
+    private @NonNull PluginJson readPluginJson(@NonNull ByteBuffer buffer, int jsonSize) {
         byte[] jsonBytes = new byte[jsonSize];
         buffer.get(jsonBytes);
 

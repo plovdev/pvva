@@ -10,7 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class VariableHandler {
-    // Исправленное регулярное выражение - захватывает имя переменной и опциональные модификаторы
     private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\{([\\w-]+)(?:;([^}]+))?}");
     private static final Logger log = LoggerFactory.getLogger(VariableHandler.class);
 

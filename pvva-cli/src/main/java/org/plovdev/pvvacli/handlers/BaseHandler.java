@@ -31,7 +31,7 @@ public class BaseHandler extends CommandHandler {
     private static final Logger log = LoggerFactory.getLogger(BaseHandler.class);
 
     @Command("build")
-    public static void build(@NonNull CommandInfo info) {
+    void build(@NonNull CommandInfo info) {
         boolean isSuccessful = false;
 
         String pluginJsonRaw = PvvaPaths.allString(PvvaPaths.PLUGIN_JSON);

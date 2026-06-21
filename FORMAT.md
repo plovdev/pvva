@@ -3,7 +3,7 @@
 **PVVA** - PornViewer Video Adapter.
 Бинарный формат, который представляет плагин для парсинга сайтов-источников для [PornViewer](https://github.com/anton-1488/PornViewer).
 
-Основная структура файла - `.json` конфиги и `.parser(yaml based)` файлы.
+Основная структура файла - `.json` конфиги и `.parser(lua based)` файлы.
 
 ## Общая структура файла
 
@@ -14,15 +14,15 @@ HEADER
   BODY:
 - `plugin.json`
 - `/configs`
-    - `resource-config.json` + CRC32 checksum
-    - `other configs(http-config.json, captcha-config.json, etc.)` + CRC32 checksum
+    - `resource-config.json`
+    - `other configs(http-config.json, captcha-config.json, etc.)`
 - `/parsers`
-    - `main-parser.parser` + CRC32 checksum
-    - `other .parser` files, which should be included in build + CRC32 checksum
+    - `main-parser.parser`
+    - `other .parser` files, which should be included in build
 
 ## Детальный разбор структуры
 
-### HEADER 50 bytes:
+### HEADER 23 bytes:
 
 Заголовок генерируется из `build.xml` файла.
 
@@ -60,8 +60,6 @@ CHUNK-CONTENT                                             // nbytes
 Существуют следующие флаги:
 
 1. `0` - Стандартный плагин. Содержит в себе только .json и .parser файлы. Подходит для безопасного публичного распространения
-2. `1` - Расширенный `.groovy` скриптами(не официальная поддержка). Дает возможность упаковывать и распаковывать скрипты для сложного сценария парсинга. Groovy выполняется в изолированной песочнице
-3. `2` - Расширенный `groovy(xGroovy)` - скрипты, которые работают без ограничений. Только в режиме разработчика. Не подходит для распространения.
 
 `Build ID` - id сборки плагина. Необходима для проверки версий в автообновлениях.
 Current BuildID < Available BuildID ? load update : not load update.
@@ -70,7 +68,6 @@ Current BuildID < Available BuildID ? load update : not load update.
 Это постоянное значение. Нужно для идентификации плагина в приложении.
 
 `MIN/MAX_APP_SUPPORTED_VERSION` - минимальная и максимальная версия приложения, в пределах которой плагин будет работать отлично.
-`Reversed` - зарезервированное место для доп. полей и расширенных форматов.
 `Json Size` - размер `plugin.json` - файл-описание плагина для пользователя и приложения.
 
 ### Тело файла
@@ -90,15 +87,9 @@ Current BuildID < Available BuildID ? load update : not load update.
     - `license` - url лицензии плагина.
     - `homepage` - домашняя страница плагина. Обычно ссылка на исходный код.
 
-Затем идут чанки(файл-блоки). Это `.json`, `.parser`, и, если включено `.groovy`.
+Затем идут чанки(файл-блоки). Это `.json`, `.parser` и тд.
 
-`CHUNK-ID length` - Длина имени файла.
-`CHUNK-ID` - имя файла.
-`CHUNK-SIZE` - размер данных файла.
-`CHUNK-CONTENT` - сам файл.
-`CHUNK-CRC32` - контрольная сумма проверки целостности файл-блока(всего).
-
-## build.xml In Action:
-
-Build.xml - файл на основе которого собирается плагин.
-Начинается с корневого элемента `<plugin>`
+`CHUNK-ID length` - Длина имени чанка.
+`CHUNK-SIZE` - размер данных чанка.
+`CHUNK-ID` - имя чанка.
+`CHUNK-CONTENT` - сам чанк.

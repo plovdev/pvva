@@ -9,7 +9,7 @@
         }
     },
     "models": {
-        "support": true,
+        "supports": true,
         "endpoint": "/models/${page}",
         "model": {
             "supports": true,
