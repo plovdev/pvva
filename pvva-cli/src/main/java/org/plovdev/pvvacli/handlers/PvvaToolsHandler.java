@@ -69,12 +69,14 @@ public class PvvaToolsHandler extends CommandHandler {
                     appendString(builder, "    Support Category", res.supportCategory());
                 });
 
-                builder.append("\nFor more info enter `pvva extract -i=").append(pvva).append(" -e={entry}` ");
-                builder.append("or enter pvva unpack -i=").append(pvva);
+                builder.append("\nFor more info enter 'pvva extract -i=").append(pvva).append(" -e={entry}' ");
+                builder.append("or enter 'pvva unpack -i=").append(pvva).append("'");
                 System.out.println(builder);
             } catch (Exception e) {
                 log.error("Error read pvva file: ", e);
             }
+        } else {
+            System.out.println("Parameter '-i' not found");
         }
     }
 }
