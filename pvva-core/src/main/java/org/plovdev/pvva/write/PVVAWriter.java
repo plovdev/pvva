@@ -123,6 +123,21 @@ public class PVVAWriter implements AutoCloseable {
         log.debug("HttpConfig bytes writen: {}, hc name bytes written: {}", httpWriten, httpNameWriten);
     }
 
+    public synchronized ByteBuffer getWritedData() throws IOException {
+        long position = writeChannel.position();
+        writeChannel.position(0);
+        ByteBuffer buffer = ByteBuffer.allocate((int) position);
+        writeChannel.read(buffer);
+        return buffer.flip();
+    }
+
+    public void appendSignature(byte[] sign) throws IOException {
+        int writen = writeChannel.write(ByteBuffer.wrap(sign));
+        if (writen != sign.length) {
+            throw new IOException("Error to write sign.");
+        }
+    }
+
     @Override
     public void close() throws IOException {
         writeChannel.close();

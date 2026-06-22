@@ -17,6 +17,7 @@ import org.plovdev.pvva.transforms.parser.ParserTransformer;
 import org.plovdev.pvva.write.PVVAWriter;
 import org.plovdev.pvvacli.PvvaPaths;
 import org.plovdev.pvvacli.models.BuildXml;
+import org.plovdev.pvvacli.security.Signer;
 import org.plovdev.pvvacli.transforms.BuildXmlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,14 +73,7 @@ public class BaseHandler extends CommandHandler {
             }
         }
 
-
-        byte[] signature = null;
-        if (buildXml.isCreateSignature()) {
-            signature = new byte[64];
-            //TODO: generate signature
-        }
-
-        PVVAHost host = new PVVAHost(Objects.requireNonNull(header), Objects.requireNonNull(pluginJson), Objects.requireNonNull(resourceConfig), Objects.requireNonNull(httpConfig), Objects.requireNonNull(mainParser), signature);
+        PVVAHost host = new PVVAHost(Objects.requireNonNull(header), Objects.requireNonNull(pluginJson), Objects.requireNonNull(resourceConfig), Objects.requireNonNull(httpConfig), Objects.requireNonNull(mainParser), null);
         if (Files.notExists(PvvaPaths.BUILDS_OUT)) {
             try {
                 Files.createDirectory(PvvaPaths.BUILDS_OUT);
@@ -90,6 +84,9 @@ public class BaseHandler extends CommandHandler {
 
         try (PVVAWriter writer = new PVVAWriter(PvvaPaths.BUILDS_OUT.resolve(finalName))) {
             writer.writeVideoAdapter(host);
+            if (buildXml.isCreateSignature()) {
+                writer.appendSignature(Signer.getSignature(writer.getWritedData().array()));
+            }
             isSuccessful = true;
         } catch (Exception e) {
             log.error("Error to write pvva addapter: ", e);

@@ -13,6 +13,7 @@ public final class PluginJson {
     private final String autoUpdateUrl;
     private final boolean signRequired;
     private final String author;
+    private final String developerId;
     private final String authorPage;
     private final String licenseUrl;
     private final String homepage;
@@ -25,6 +26,7 @@ public final class PluginJson {
             @Nullable String autoUpdateUrl,
             boolean signRequired,
             @Nullable String author,
+            @Nullable String developerId,
             @Nullable String authorPage,
             @Nullable String licenseUrl,
             @Nullable String homepage) {
@@ -35,6 +37,7 @@ public final class PluginJson {
         this.autoUpdateUrl = autoUpdateUrl;
         this.signRequired = signRequired;
         this.author = author;
+        this.developerId = developerId;
         this.authorPage = authorPage;
         this.licenseUrl = licenseUrl;
         this.homepage = homepage;
@@ -68,6 +71,10 @@ public final class PluginJson {
         return Optional.ofNullable(author);
     }
 
+    public @NonNull Optional<String> developerId() {
+        return Optional.ofNullable(developerId);
+    }
+
     public @NonNull Optional<String> authorPage() {
         return Optional.ofNullable(authorPage);
     }
@@ -81,7 +88,7 @@ public final class PluginJson {
     }
 
     @Override
-    public @NonNull String toString() {
+    public String toString() {
         return "PluginJson{" +
                 "title='" + title + '\'' +
                 ", version='" + version + '\'' +
@@ -89,6 +96,7 @@ public final class PluginJson {
                 ", autoUpdateUrl='" + autoUpdateUrl + '\'' +
                 ", signRequired=" + signRequired +
                 ", author='" + author + '\'' +
+                ", developerId='" + developerId + '\'' +
                 ", authorPage='" + authorPage + '\'' +
                 ", licenseUrl='" + licenseUrl + '\'' +
                 ", homepage='" + homepage + '\'' +

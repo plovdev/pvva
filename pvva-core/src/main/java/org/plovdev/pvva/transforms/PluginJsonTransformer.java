@@ -21,6 +21,7 @@ public final class PluginJsonTransformer {
 
         JsonObject legal = pluginJson.get("legal").getAsJsonObject();
         String author = extractString("author", legal);
+        String devId = extractString("developer-id", legal);
         String authorPage = extractString("author-page", legal);
         String license = extractString("license", legal);
         String homepage = extractString("homepage", legal);
@@ -29,7 +30,7 @@ public final class PluginJsonTransformer {
         String updateUrl = extractString("url", commons);
         boolean seignRequired = Boolean.getBoolean(extractString("sign-required", commons));
 
-        return new PluginJson(title, version, description, updateUrl, seignRequired, author, authorPage, license, homepage);
+        return new PluginJson(title, version, description, updateUrl, seignRequired, author, devId, authorPage, license, homepage);
     }
 
     public static String toJson(@NonNull PluginJson json) {
@@ -48,6 +49,7 @@ public final class PluginJsonTransformer {
 
         JsonObject legal = new JsonObject();
         json.author().ifPresent(author -> legal.addProperty("author", author));
+        json.developerId().ifPresent(devId -> legal.addProperty("developer-id", devId));
         json.authorPage().ifPresent(page -> legal.addProperty("author-page", page));
         json.licenseUrl().ifPresent(url -> legal.addProperty("license", url));
         json.homepage().ifPresent(homepage -> legal.addProperty("homepage", homepage));

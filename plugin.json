@@ -10,6 +10,7 @@
     },
     "legal": {
         "author": "PlovDev",
+        "developer-id": "1a2b3c4d5e6f7g8h9i0g",
         "author-page": "https://github.com/plovdev",
         "license": "https://unlicense.org",
         "homepage": "https://github.com/plovdev/PornViewer/tree/pv-legacy/plugins/files"
