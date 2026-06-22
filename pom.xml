@@ -4,10 +4,33 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.plovdev</groupId>
-    <artifactId>pvva</artifactId>
-    <version>1.1</version>
-    <packaging>pom</packaging>
+    <groupId>io.github.plovdev</groupId>
+    <artifactId>pvva-root</artifactId>
+    <name>PVVA</name>
+    <version>${revision}</version>
+    <description>PVVA - java lib for access with PornViewer Video Adapters.</description>
+    <url>https://github.com/plovdev/PVVA</url>
+
+    <licenses>
+        <license>
+            <name>The Unlicense</name>
+            <url>http://unlicense.org</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Anton</name>
+            <email>ap67253100@gmail.com</email>
+            <organization>PlovDev</organization>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/plovdev/PVVA.git</connection>
+        <developerConnection>scm:git:git@github.com:plovdev/PVVA.git</developerConnection>
+        <url>https://github.com/plovdev/PVVA</url>
+    </scm>
 
     <modules>
         <module>pvva-cli</module>
@@ -15,6 +38,7 @@
     </modules>
 
     <properties>
+        <revision>1.2</revision>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
