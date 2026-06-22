@@ -1,25 +1,24 @@
 {
-    "http-client": "OK_HTTP_CLIENT",
-    "headers": {
-        "set": [
-            {
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-                "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
-                "Cache-Control": "max-age=0",
-                "Upgrade-Insecure-Requests": "1",
-                "Referer": "http://9porno365.info",
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
-            }
-        ]
-    },
-    "timeouts": {
-        "connect-timeout": 60000,
-        "read-timeout": 60000,
-        "write-timeout": 60000
-    },
-    "retry": {
-        "retry-count": 3,
-        "retry-policy": "ON_FAILED",
-        "retry-delay": 1000
-    }
+  "http-client": "OK_HTTP_CLIENT",
+  "headers": {
+    "random": false,
+    "set": [
+      {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q\u003d0.9,image/avif,image/webp,image/apng,*/*;q\u003d0.8,application/signed-exchange;v\u003db3;q\u003d0.7",
+        "Cache-Control": "max-age\u003d0",
+        "Upgrade-Insecure-Requests": "1",
+        "Referer": "http://9porno365.info",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+        "Accept-Language": "ru-RU,ru;q\u003d0.9,en-US;q\u003d0.8,en;q\u003d0.7"
+      }
+    ]
+  },
+  "timeouts": {
+    "connect-timeout": 60000
+  },
+  "retry": {
+    "retry-count": 3,
+    "retry-policy": "ON_FAILED",
+    "retry-delay": 1000
+  }
 }
