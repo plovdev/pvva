@@ -8,31 +8,7 @@
     <artifactId>pvva-root</artifactId>
     <name>PVVA</name>
     <version>${revision}</version>
-    <description>PVVA - java lib for access with PornViewer Video Adapters.</description>
-    <url>https://github.com/plovdev/PVVA</url>
     <packaging>pom</packaging>
-
-    <licenses>
-        <license>
-            <name>The Unlicense</name>
-            <url>http://unlicense.org</url>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <name>Anton</name>
-            <email>ap67253100@gmail.com</email>
-            <organization>PlovDev</organization>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:https://github.com/plovdev/PVVA.git</connection>
-        <developerConnection>scm:git:git@github.com:plovdev/PVVA.git</developerConnection>
-        <url>https://github.com/plovdev/PVVA</url>
-    </scm>
-
     <modules>
         <module>pvva-cli</module>
         <module>pvva-core</module>
@@ -44,75 +20,4 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
-                <configuration>
-                    <release>21</release>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.sonatype.central</groupId>
-                <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.6.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <publishingServerId>central</publishingServerId>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                        <configuration>
-                            <gpgArguments>
-                                <arg>--pinentry-mode</arg>
-                                <arg>loopback</arg>
-                            </gpgArguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.6.3</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>
