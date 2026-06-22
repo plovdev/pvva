@@ -12,20 +12,10 @@ public record PVVAHost(@NonNull PVVAHeader header,
                        @NonNull PluginJson pluginJson,
                        @NonNull ResourceConfig resourceConfig,
                        @Nullable HttpConfig httpConfig,
-                       @NonNull MainParser mainParser) {
+                       @NonNull MainParser mainParser,
+                       byte @Nullable [] signature) {
 
     public @NonNull Optional<HttpConfig> optHttpConfig() {
         return Optional.ofNullable(httpConfig);
-    }
-
-    @Override
-    public @NonNull String toString() {
-        return "PVVAHost{" +
-                "header=" + header +
-                ", pluginJson=" + pluginJson +
-                ", resourceConfig=" + resourceConfig +
-                ", httpConfig=" + httpConfig +
-                ", mainParser=" + mainParser +
-                '}';
     }
 }

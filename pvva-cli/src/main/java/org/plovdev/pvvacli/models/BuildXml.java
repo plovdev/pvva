@@ -6,6 +6,7 @@ public class BuildXml {
     private String pluginId;
     private String minAppVersion;
     private String maxAppVersion;
+    private boolean createSignature;
     private String excludePath;
     private String includeSource;
     private int flag;
@@ -94,6 +95,14 @@ public class BuildXml {
         this.url = url;
     }
 
+    public boolean isCreateSignature() {
+        return createSignature;
+    }
+
+    public void setCreateSignature(boolean createSignature) {
+        this.createSignature = createSignature;
+    }
+
     public static int versionToInt(@NonNull String version) {
         String[] parts = version.split("\\.");
         int major = Integer.parseInt(parts[0]);
@@ -117,12 +126,14 @@ public class BuildXml {
                 "pluginId='" + pluginId + '\'' +
                 ", minAppVersion='" + minAppVersion + '\'' +
                 ", maxAppVersion='" + maxAppVersion + '\'' +
+                ", createSignature=" + createSignature +
                 ", excludePath='" + excludePath + '\'' +
                 ", includeSource='" + includeSource + '\'' +
                 ", flag=" + flag +
                 ", finalName='" + finalName + '\'' +
                 ", sign='" + sign + '\'' +
                 ", createInfo=" + createInfo +
+                ", url='" + url + '\'' +
                 '}';
     }
 }

@@ -43,8 +43,13 @@ public class PVVAReader implements AutoCloseable {
         readChannel.read(buffer);
         buffer.flip();
 
+        int totalSize = buffer.limit();
+
         checkMagic(buffer);
         PVVAHeader header = readHeader(buffer);
+        if (header.hasSign()) {
+            buffer.limit(totalSize - 64);
+        }
         PluginJson pluginJson = readPluginJson(buffer, header.jsonSize());
         List<Chunk> chunks = readAllChunks(buffer);
 
@@ -66,12 +71,20 @@ public class PVVAReader implements AutoCloseable {
             }
         }
 
-        return new PVVAHost(header, pluginJson, Objects.requireNonNull(resourceConfig), httpConfig, Objects.requireNonNull(mainParser));
+        byte[] signature = null;
+        if (header.hasSign()) {
+            buffer.limit(totalSize);
+            signature = new byte[64];
+            buffer.get(signature);
+        }
+
+        return new PVVAHost(header, pluginJson, Objects.requireNonNull(resourceConfig), httpConfig, Objects.requireNonNull(mainParser), signature);
     }
 
     private @NonNull PVVAHeader readHeader(@NonNull ByteBuffer buffer) {
         byte version = buffer.get();
         byte flag = buffer.get();
+        boolean hasSign = buffer.get() != 0;
         int buildId = buffer.getInt();
 
         byte idlength = buffer.get();
@@ -83,7 +96,7 @@ public class PVVAReader implements AutoCloseable {
         buffer.get(plugId);
         String pluginId = new String(plugId);
 
-        return new PVVAHeader(version, flag, buildId, idlength, pluginId, minAppVersion, maxAppVersion, pluginJsonSize);
+        return new PVVAHeader(version, flag, hasSign, buildId, idlength, pluginId, minAppVersion, maxAppVersion, pluginJsonSize);
     }
 
     private @NonNull PluginJson readPluginJson(@NonNull ByteBuffer buffer, int jsonSize) {

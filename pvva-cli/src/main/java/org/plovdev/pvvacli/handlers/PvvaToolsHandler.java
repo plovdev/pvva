@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import static org.plovdev.pvvacli.handlers.utils.StringBuilderAppener.appendString;
 
@@ -33,8 +34,9 @@ public class PvvaToolsHandler extends CommandHandler {
                 appendString(builder, "FileSize", PvvaPaths.length(pvva));
                 builder.append("\n");
 
-                appendString(builder, "FileVersion", header.version());
+                appendString(builder, "File Version", header.version());
                 appendString(builder, "Adapter Flag", header.flag());
+                appendString(builder, "Has Signature", header.hasSign());
                 appendString(builder, "BuildID", header.buildId());
                 appendString(builder, "Min App Version", BuildXml.intToVersion(header.minAppVersion()));
                 appendString(builder, "Max App Version", BuildXml.intToVersion(header.maxAppVersion()));
@@ -68,6 +70,11 @@ public class PvvaToolsHandler extends CommandHandler {
                     appendString(builder, "Support Categories", res.supports());
                     appendString(builder, "    Support Category", res.supportCategory());
                 });
+
+                if (header.hasSign() && host.signature() != null) {
+                    builder.append("\n");
+                    appendString(builder, "Signature", Arrays.toString(host.signature()));
+                }
 
                 builder.append("\nFor more info enter 'pvva extract -i=").append(pvva).append(" -e={entry}' ");
                 builder.append("or enter 'pvva unpack -i=").append(pvva).append("'");

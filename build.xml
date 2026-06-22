@@ -4,6 +4,10 @@
         <min-app-version>2.0.0</min-app-version>
         <max-app-version>3.0.0</max-app-version>
     </properties>
+    <sign>
+        <create-sign>true</create-sign>
+    </sign>
+
     <build>
         <final-name>Porn365</final-name>
         <create-info>true</create-info>

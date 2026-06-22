@@ -26,6 +26,8 @@ public class BuildXmlParser {
             buildXml.setMinAppVersion(getElementText(doc, "min-app-version"));
             buildXml.setMaxAppVersion(getElementText(doc, "max-app-version"));
 
+            buildXml.setCreateSignature(Boolean.parseBoolean(getElementText(doc, "create-sign")));
+
             buildXml.setExcludePath(getElementText(doc, "path"));
             buildXml.setIncludeSource(getElementText(doc, "source"));
 

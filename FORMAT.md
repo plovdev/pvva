@@ -1,7 +1,7 @@
 # .PVVA Format Description
 
 **PVVA** - PornViewer Video Adapter.
-Бинарный формат, который представляет плагин для парсинга сайтов-источников для [PornViewer](https://github.com/anton-1488/PornViewer).
+Бинарный формат, который представляет плагин для парсинга сайтов-источников для [PornViewer](https://github.com/plovdev/PornViewer).
 
 Основная структура файла - `.json` конфиги и `.parser(lua based)` файлы.
 
@@ -22,7 +22,7 @@ HEADER
 
 ## Детальный разбор структуры
 
-### HEADER 23 bytes:
+### HEADER 24 bytes:
 
 Заголовок генерируется из `build.xml` файла.
 
@@ -31,6 +31,7 @@ HEADER
 Magic number(PVVA)                                        // 4bytes
 File version                                              // 1byte
 File flag                                                 // 1byte
+Contains signature                                        // 1byte
 Build ID                                                  // 4bytes
 
 plugin id length                                          // 1byte
@@ -51,6 +52,7 @@ CHUNK-SIZE                                                // 4byte
 CHUNK-ID                                                  // nbyte
 CHUNK-CONTENT                                             // nbytes
 -------------
+Plugin signature                                          // 64bytes
 ```
 
 ## Пояснения
@@ -93,3 +95,5 @@ Current BuildID < Available BuildID ? load update : not load update.
 `CHUNK-SIZE` - размер данных чанка.
 `CHUNK-ID` - имя чанка.
 `CHUNK-CONTENT` - сам чанк.
+
+В самом конце плагина возможно поле signature которое является цифровой подписью плагина.

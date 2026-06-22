@@ -46,7 +46,7 @@ public class BaseHandler extends CommandHandler {
             PvvaPaths.delete(PvvaPaths.BUILDS_OUT.resolve(finalName));
         }
 
-        PVVAHeader header = new PVVAHeader((byte) 1, (byte) buildXml.getFlag(), buildId, (byte) pluginId.length(), pluginId, BuildXml.versionToInt(buildXml.getMinAppVersion()), BuildXml.versionToInt(buildXml.getMaxAppVersion()), pluginJsonBytes.length);
+        PVVAHeader header = new PVVAHeader((byte) 1, (byte) buildXml.getFlag(), buildXml.isCreateSignature(), buildId, (byte) pluginId.length(), pluginId, BuildXml.versionToInt(buildXml.getMinAppVersion()), BuildXml.versionToInt(buildXml.getMaxAppVersion()), pluginJsonBytes.length);
 
         PluginJson pluginJson = null;
         ResourceConfig resourceConfig = null;
@@ -72,7 +72,14 @@ public class BaseHandler extends CommandHandler {
             }
         }
 
-        PVVAHost host = new PVVAHost(Objects.requireNonNull(header), Objects.requireNonNull(pluginJson), Objects.requireNonNull(resourceConfig), Objects.requireNonNull(httpConfig), Objects.requireNonNull(mainParser));
+
+        byte[] signature = null;
+        if (buildXml.isCreateSignature()) {
+            signature = new byte[64];
+            //TODO: generate signature
+        }
+
+        PVVAHost host = new PVVAHost(Objects.requireNonNull(header), Objects.requireNonNull(pluginJson), Objects.requireNonNull(resourceConfig), Objects.requireNonNull(httpConfig), Objects.requireNonNull(mainParser), signature);
         if (Files.notExists(PvvaPaths.BUILDS_OUT)) {
             try {
                 Files.createDirectory(PvvaPaths.BUILDS_OUT);
@@ -88,12 +95,11 @@ public class BaseHandler extends CommandHandler {
             log.error("Error to write pvva addapter: ", e);
         }
 
-        if (buildXml.needCreateInfo()) {
-            InfoCreator.createPluginInfo(finalName, buildXml.getUrl(), header);
-            log.info("Info created");
-        }
-
         if (isSuccessful) {
+            if (buildXml.needCreateInfo()) {
+                InfoCreator.createPluginInfo(finalName, buildXml.getUrl(), header);
+                log.info("Info created");
+            }
             log.info("Adapter packed successful");
         } else {
             log.warn("Adapter was not packed success");

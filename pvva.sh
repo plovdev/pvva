@@ -1,1 +1,0 @@
-java -jar "/Users/mac/IdeaProjects/PV Video Adapter/pvva-cli/target/pvva-cli.jar" "$@"

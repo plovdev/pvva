@@ -52,11 +52,17 @@ public class PVVAWriter implements AutoCloseable {
         log.debug("PluginJson bytes writen: {}", jsonWriten);
 
         writeChunks(pvvaHost);
+
+        if (header.hasSign() && pvvaHost.signature() != null) {
+            int signWriten = writeChannel.write(ByteBuffer.wrap(pvvaHost.signature()));
+            log.trace("Signature bytes writen: {}", signWriten);
+        }
     }
 
     private void writeHeader(@NonNull ByteBuffer buffer, @NonNull PVVAHeader header) {
         buffer.put(header.version());
         buffer.put(header.flag());
+        buffer.put((byte) (header.hasSign() ? 1 : 0));
         buffer.putInt(header.buildId());
 
         buffer.put(header.idlength());

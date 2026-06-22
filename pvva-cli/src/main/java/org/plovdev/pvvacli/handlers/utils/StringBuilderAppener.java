@@ -26,6 +26,6 @@ public class StringBuilderAppener {
 
     @Contract(pure = true)
     public static void appendString(@NonNull StringBuilder builder, @NonNull String text, boolean value) {
-        appendString(builder, text, String.valueOf(value));
+        appendString(builder, text, value ? "Yes" : "No");
     }
 }
