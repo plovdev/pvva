@@ -3,6 +3,10 @@ package org.plovdev.pvva.models.chunks;
 import java.util.Arrays;
 
 public abstract class Chunk {
+    public static final String RESOURCE_CONFIG = "resource-config";
+    public static final String HTTP_CONFIG = "http-config";
+    public static final String MAIN_PARSER = "main-parser";
+
     public static final int CHUNK_ID_LENGTH_LENGTH = 1;
     public static final int CHUNK_ID_LENGTH = 4;
     public static final int CHUNK_SIZE_LENGTH = 4;

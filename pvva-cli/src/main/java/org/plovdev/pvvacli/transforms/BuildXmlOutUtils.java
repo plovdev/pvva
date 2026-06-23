@@ -23,7 +23,7 @@ public class BuildXmlOutUtils {
         document.setXmlStandalone(true);
 
         Element element = document.createElement("plugin");
-        element.setAttribute("id", header.pluginId());
+        element.setAttribute("id", header.getPluginId());
         element.appendChild(createProperties(document, header));
         document.appendChild(element);
 
@@ -45,15 +45,15 @@ public class BuildXmlOutUtils {
     private static @NonNull Element createProperties(@NonNull Document document, @NonNull PVVAHeader header) {
         Element properties = document.createElement("properties");
         Element createSign = document.createElement("create-sign");
-        createSign.setTextContent(String.valueOf(header.hasSign()));
+        createSign.setTextContent(String.valueOf(header.isHasSign()));
         properties.appendChild(createSign);
 
         Element minAppVersion = document.createElement("min-app-version");
-        minAppVersion.setTextContent(BuildXml.intToVersion(header.minAppVersion()));
+        minAppVersion.setTextContent(BuildXml.intToVersion(header.getMinAppVersion()));
         properties.appendChild(minAppVersion);
 
         Element maxAppVersion = document.createElement("max-app-version");
-        maxAppVersion.setTextContent(BuildXml.intToVersion(header.maxAppVersion()));
+        maxAppVersion.setTextContent(BuildXml.intToVersion(header.getMaxAppVersion()));
         properties.appendChild(maxAppVersion);
         return properties;
     }

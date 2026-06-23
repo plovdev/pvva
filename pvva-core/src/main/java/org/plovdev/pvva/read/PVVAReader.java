@@ -3,7 +3,6 @@ package org.plovdev.pvva.read;
 import org.jspecify.annotations.NonNull;
 import org.plovdev.pvva.models.PVVAHeader;
 import org.plovdev.pvva.models.PVVAHost;
-import org.plovdev.pvva.models.PluginJson;
 import org.plovdev.pvva.models.chunks.Chunk;
 import org.plovdev.pvva.models.configs.httpconfig.HttpConfig;
 import org.plovdev.pvva.models.configs.resourceconfig.ResourceConfig;
@@ -24,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.plovdev.pvva.utils.DataCompressor.decompress;
+
 public class PVVAReader implements AutoCloseable {
     private final FileChannel readChannel;
     private final Path readSource;
@@ -42,23 +43,25 @@ public class PVVAReader implements AutoCloseable {
         ByteBuffer buffer = ByteBuffer.allocate((int) Files.size(readSource));
         readChannel.read(buffer);
         buffer.flip();
-
         int totalSize = buffer.limit();
 
         checkMagic(buffer);
         PVVAHeader header = readHeader(buffer);
-        if (header.hasSign()) {
+        if (header.isHasSign()) {
             buffer.limit(totalSize - 64);
         }
-        PluginJson pluginJson = readPluginJson(buffer, header.jsonSize());
-        List<Chunk> chunks = readAllChunks(buffer);
 
+        String pluginJson = readPluginJson(buffer, header.getJsonSize());
+        int realPluginJsonSize = pluginJson.length();
+
+        List<Chunk> chunks = readAllChunks(buffer);
         ResourceConfig resourceConfig = null;
         HttpConfig httpConfig = null;
         MainParser mainParser = null;
 
         for (Chunk chunk : chunks) {
-            String chunkContent = new String(chunk.getChunkContent(), StandardCharsets.UTF_8);
+            String chunkContent = new String(decompress(chunk.getChunkContent()), StandardCharsets.UTF_8);
+            chunk.setChunkSize(chunkContent.length());
             switch (chunk.getChunkId()) {
                 case "resource-config":
                     resourceConfig = ResourceConfigTransformer.ofJson(chunkContent);
@@ -72,13 +75,14 @@ public class PVVAReader implements AutoCloseable {
         }
 
         byte[] signature = null;
-        if (header.hasSign()) {
+        if (header.isHasSign()) {
             buffer.limit(totalSize);
             signature = new byte[64];
             buffer.get(signature);
         }
 
-        return new PVVAHost(header, pluginJson, Objects.requireNonNull(resourceConfig), httpConfig, Objects.requireNonNull(mainParser), signature);
+        header.setJsonSize(realPluginJsonSize);
+        return new PVVAHost(header, PluginJsonTransformer.ofJson(pluginJson), Objects.requireNonNull(resourceConfig), httpConfig, Objects.requireNonNull(mainParser), signature);
     }
 
     private @NonNull PVVAHeader readHeader(@NonNull ByteBuffer buffer) {
@@ -90,8 +94,8 @@ public class PVVAReader implements AutoCloseable {
         byte idlength = buffer.get();
         int minAppVersion = buffer.getInt();
         int maxAppVersion = buffer.getInt();
-
         int pluginJsonSize = buffer.getInt();
+
         byte[] plugId = new byte[idlength];
         buffer.get(plugId);
         String pluginId = new String(plugId);
@@ -99,12 +103,11 @@ public class PVVAReader implements AutoCloseable {
         return new PVVAHeader(version, flag, hasSign, buildId, idlength, pluginId, minAppVersion, maxAppVersion, pluginJsonSize);
     }
 
-    private @NonNull PluginJson readPluginJson(@NonNull ByteBuffer buffer, int jsonSize) {
+    private @NonNull String readPluginJson(@NonNull ByteBuffer buffer, int jsonSize) {
         byte[] jsonBytes = new byte[jsonSize];
         buffer.get(jsonBytes);
 
-        String json = new String(jsonBytes, StandardCharsets.UTF_8);
-        return PluginJsonTransformer.ofJson(json);
+        return new String(decompress(jsonBytes), StandardCharsets.UTF_8);
     }
 
     private @NonNull List<Chunk> readAllChunks(@NonNull ByteBuffer buffer) {

@@ -33,16 +33,16 @@ public class PvvaToolsHandler extends CommandHandler {
                 PVVAHost host = reader.parseVideoAdapter();
                 PVVAHeader header = host.header();
 
-                StringBuilder builder = new StringBuilder(pvva.getFileName() + "(" + header.pluginId() + ")" + "\n");
+                StringBuilder builder = new StringBuilder(pvva.getFileName() + "(" + header.getPluginId() + ")" + "\n");
                 appendString(builder, "FileSize", PvvaPaths.length(pvva));
                 builder.append("\n");
 
-                appendString(builder, "File Version", header.version());
-                appendString(builder, "Adapter Flag", header.flag());
-                appendString(builder, "Has Signature", header.hasSign());
-                appendString(builder, "Build ID", header.buildId());
-                appendString(builder, "Min App Version", BuildXml.intToVersion(header.minAppVersion()));
-                appendString(builder, "Max App Version", BuildXml.intToVersion(header.maxAppVersion()));
+                appendString(builder, "File Version", header.getVersion());
+                appendString(builder, "Adapter Flag", header.getFlag());
+                appendString(builder, "Has Signature", header.isHasSign());
+                appendString(builder, "Build ID", header.getBuildId());
+                appendString(builder, "Min App Version", BuildXml.intToVersion(header.getMinAppVersion()));
+                appendString(builder, "Max App Version", BuildXml.intToVersion(header.getMaxAppVersion()));
 
                 PluginJson pluginJson = host.pluginJson();
                 builder.append("\n");
@@ -72,7 +72,7 @@ public class PvvaToolsHandler extends CommandHandler {
                     appendString(builder, "    Support Category", res.supportCategory());
                 });
 
-                if (header.hasSign() && host.signature() != null) {
+                if (header.isHasSign() && host.signature() != null) {
                     builder.append("\n");
                     appendString(builder, "Signature", Arrays.toString(host.signature()));
                 }

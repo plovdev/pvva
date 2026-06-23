@@ -26,8 +26,8 @@ public final class InfoCreator {
             byte[] dgst = digest.digest(PvvaPaths.allBytes(PvvaPaths.BUILDS_OUT.resolve(finalName)));
 
             String sign = format.formatHex(dgst);
-            String pluginId = header.pluginId();
-            int buildId = header.buildId();
+            String pluginId = header.getPluginId();
+            int buildId = header.getBuildId();
 
             String jsonString = writeJsonInfo(sign, url, pluginId, buildId);
             try (FileOutputStream stream = new FileOutputStream(PvvaPaths.BUILDS_OUT.resolve(pluginId + ".json").toFile())) {

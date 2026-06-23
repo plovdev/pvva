@@ -22,6 +22,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.plovdev.pvva.models.chunks.Chunk.*;
+import static org.plovdev.pvva.utils.DataCompressor.compress;
+
 public class PVVAWriter implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(PVVAWriter.class);
     private final FileChannel writeChannel;
@@ -39,37 +42,38 @@ public class PVVAWriter implements AutoCloseable {
 
     public void writeVideoAdapter(@NonNull PVVAHost pvvaHost) throws IOException {
         PVVAHeader header = pvvaHost.header();
-        ByteBuffer buffer = ByteBuffer.allocate(PVVAHeader.HEADER_SIZE);
-        buffer.put(PVVAHeader.MAGIC_NUMBER.getBytes(StandardCharsets.US_ASCII));
 
-        writeHeader(buffer, header);
-        int headerWritten = writeChannel.write(buffer);
-        int pluginIdWritten = writeChannel.write(ByteBuffer.wrap(header.pluginId().getBytes()));
-        log.debug("Headers bytes written: {}, plugin id written: {}", headerWritten, pluginIdWritten);
+        int magicWriten = writeChannel.write(ByteBuffer.wrap(PVVAHeader.MAGIC_NUMBER.getBytes(StandardCharsets.US_ASCII)));
+        if (magicWriten != 4) throw new IOException("Magic number has been incorrect writen");
 
-        byte[] jsonBytes = PluginJsonTransformer.toJson(pvvaHost.pluginJson()).getBytes(StandardCharsets.UTF_8);
-        int jsonWriten = writeChannel.write(ByteBuffer.wrap(jsonBytes));
-        log.debug("PluginJson bytes writen: {}", jsonWriten);
-
+        writeHeader(pvvaHost, header);
         writeChunks(pvvaHost);
 
-        if (header.hasSign() && pvvaHost.signature() != null) {
+        if (header.isHasSign() && pvvaHost.signature() != null) {
             int signWriten = writeChannel.write(ByteBuffer.wrap(pvvaHost.signature()));
             log.trace("Signature bytes writen: {}", signWriten);
         }
     }
 
-    private void writeHeader(@NonNull ByteBuffer buffer, @NonNull PVVAHeader header) {
-        buffer.put(header.version());
-        buffer.put(header.flag());
-        buffer.put((byte) (header.hasSign() ? 1 : 0));
-        buffer.putInt(header.buildId());
+    private void writeHeader(@NonNull PVVAHost host, @NonNull PVVAHeader header) throws IOException {
+        byte[] compressedJsonBytes = compress(PluginJsonTransformer.toJson(host.pluginJson()).getBytes(StandardCharsets.UTF_8));
 
-        buffer.put(header.idlength());
-        buffer.putInt(header.minAppVersion());
-        buffer.putInt(header.maxAppVersion());
-        buffer.putInt(header.jsonSize());
-        buffer.flip();
+        ByteBuffer buffer = ByteBuffer.allocate(PVVAHeader.HEADER_SIZE);
+        buffer.put(header.getVersion());
+        buffer.put(header.getFlag());
+        buffer.put((byte) (header.isHasSign() ? 1 : 0));
+        buffer.putInt(header.getBuildId());
+        buffer.put(header.getIdlength());
+        buffer.putInt(header.getMinAppVersion());
+        buffer.putInt(header.getMaxAppVersion());
+        buffer.putInt(compressedJsonBytes.length);
+
+        int headerWriten = writeChannel.write(buffer.flip());
+        log.debug("Header bytes writen: {}", headerWriten);
+        int pluginIdWritten = writeChannel.write(ByteBuffer.wrap(header.getPluginId().getBytes()));
+
+        int jsonWriten = writeChannel.write(ByteBuffer.wrap(compressedJsonBytes));
+        log.debug("PluginJson bytes writen: {}", jsonWriten);
     }
 
     private void writeChunks(@NonNull PVVAHost pvvaHost) throws IOException {
@@ -82,43 +86,42 @@ public class PVVAWriter implements AutoCloseable {
     }
 
     private void writeResourceConfig(@NonNull ResourceConfig config) throws IOException {
-        String rcname = "resource-config";
-        byte[] rcJsonBytes = ResourceConfigTransformer.toJson(config).getBytes(StandardCharsets.UTF_8);
+        byte[] rcJsonBytes = compress(ResourceConfigTransformer.toJson(config).getBytes(StandardCharsets.UTF_8));
+
         ByteBuffer configBuffer = ByteBuffer.allocate(5);
-        configBuffer.put((byte) rcname.length());
+        configBuffer.put((byte) RESOURCE_CONFIG.length());
         configBuffer.putInt(rcJsonBytes.length);
         int bufferWritten = writeChannel.write(configBuffer.flip());
         log.debug("ResourceConfig Buffer bytes written: {}", bufferWritten);
-
-        int resourceNameWriten = writeChannel.write(ByteBuffer.wrap(rcname.getBytes(StandardCharsets.US_ASCII)));
+        int resourceNameWriten = writeChannel.write(ByteBuffer.wrap(RESOURCE_CONFIG.getBytes(StandardCharsets.US_ASCII)));
         int resourceWriten = writeChannel.write(ByteBuffer.wrap(rcJsonBytes));
         log.debug("Resource Config bytes writen: {}, rc name bytes written: {}", resourceWriten, resourceNameWriten);
     }
 
     private void writeMainParser(MainParser parser) throws IOException {
-        String name = "main-parser";
-        byte[] bytes = ParserTransformer.toParser(parser).getBytes(StandardCharsets.UTF_8);
+        byte[] bytes = compress(ParserTransformer.toParser(parser).getBytes(StandardCharsets.UTF_8));
+
         ByteBuffer configBuffer = ByteBuffer.allocate(5);
-        configBuffer.put((byte) name.length());
+        configBuffer.put((byte) MAIN_PARSER.length());
         configBuffer.putInt(bytes.length);
         int bufferWritten = writeChannel.write(configBuffer.flip());
         log.debug("MainParser Buffer bytes written: {}", bufferWritten);
 
-        int nameWriten = writeChannel.write(ByteBuffer.wrap(name.getBytes(StandardCharsets.US_ASCII)));
+        int nameWriten = writeChannel.write(ByteBuffer.wrap(MAIN_PARSER.getBytes(StandardCharsets.US_ASCII)));
         int parserWriten = writeChannel.write(ByteBuffer.wrap(bytes));
         log.debug("Main Parser bytes writen: {}, name bytes written: {}", parserWriten, nameWriten);
     }
 
     private void writeHttpConfig(HttpConfig config) throws IOException {
-        String hcname = "http-config";
-        byte[] hcBytes = HttpConfigTransformer.toJson(config).getBytes(StandardCharsets.UTF_8);
+        byte[] hcBytes = compress(HttpConfigTransformer.toJson(config).getBytes(StandardCharsets.UTF_8));
+
         ByteBuffer configBuffer = ByteBuffer.allocate(5);
-        configBuffer.put((byte) hcname.length());
+        configBuffer.put((byte) HTTP_CONFIG.length());
         configBuffer.putInt(hcBytes.length);
         int bufferWritten = writeChannel.write(configBuffer.flip());
         log.debug("HttpConfig Buffer bytes written: {}", bufferWritten);
 
-        int httpNameWriten = writeChannel.write(ByteBuffer.wrap(hcname.getBytes(StandardCharsets.US_ASCII)));
+        int httpNameWriten = writeChannel.write(ByteBuffer.wrap(HTTP_CONFIG.getBytes(StandardCharsets.US_ASCII)));
         int httpWriten = writeChannel.write(ByteBuffer.wrap(hcBytes));
         log.debug("HttpConfig bytes writen: {}, hc name bytes written: {}", httpWriten, httpNameWriten);
     }
