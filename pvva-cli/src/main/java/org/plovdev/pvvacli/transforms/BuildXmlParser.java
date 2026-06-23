@@ -51,6 +51,6 @@ public class BuildXmlParser {
             String text = nodes.item(0).getTextContent();
             return text != null ? text.trim() : "";
         }
-        return "";
+        return null;
     }
 }

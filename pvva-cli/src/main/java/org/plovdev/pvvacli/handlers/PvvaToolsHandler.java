@@ -37,7 +37,7 @@ public class PvvaToolsHandler extends CommandHandler {
                 appendString(builder, "File Version", header.version());
                 appendString(builder, "Adapter Flag", header.flag());
                 appendString(builder, "Has Signature", header.hasSign());
-                appendString(builder, "BuildID", header.buildId());
+                appendString(builder, "Build ID", header.buildId());
                 appendString(builder, "Min App Version", BuildXml.intToVersion(header.minAppVersion()));
                 appendString(builder, "Max App Version", BuildXml.intToVersion(header.maxAppVersion()));
 
