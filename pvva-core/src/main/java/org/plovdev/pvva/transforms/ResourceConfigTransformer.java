@@ -161,7 +161,7 @@ public final class ResourceConfigTransformer {
             JsonObject model = new JsonObject();
             model.addProperty(SUPPORTS, modelsRes.supportModel());
             modelsRes.modelEndpoint().ifPresent(e -> model.addProperty(ENDPOINT, e));
-            models.add(MODELS, model);
+            models.add(MODEL, model);
 
             JsonObject modelSearch = new JsonObject();
             modelSearch.addProperty(SUPPORTS, modelsRes.supportModelSearch());

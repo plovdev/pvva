@@ -22,7 +22,7 @@ public final class MockDataCreator {
 
         JsonObject commons = new JsonObject();
         commons.addProperty(TITLE, "");
-        commons.addProperty(VERSION, "1.0.0-SHANPSHOT");
+        commons.addProperty(VERSION, "1.0.0-SNAPSHOT");
         commons.addProperty(DESCRIPTION, "");
         pluginJson.add(COMMONS, commons);
 
@@ -54,7 +54,7 @@ public final class MockDataCreator {
         JsonObject model = new JsonObject();
         model.addProperty(SUPPORTS, true);
         model.addProperty(ENDPOINT, "/");
-        models.add(MODELS, model);
+        models.add(MODEL, model);
         JsonObject modelSearch = new JsonObject();
         modelSearch.addProperty(SUPPORTS, true);
         modelSearch.addProperty(ENDPOINT, "/");
