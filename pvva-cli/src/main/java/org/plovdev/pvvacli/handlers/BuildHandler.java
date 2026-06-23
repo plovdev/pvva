@@ -19,6 +19,7 @@ import org.plovdev.pvvacli.PvvaPaths;
 import org.plovdev.pvvacli.models.BuildXml;
 import org.plovdev.pvvacli.security.Signer;
 import org.plovdev.pvvacli.transforms.BuildXmlParser;
+import org.plovdev.pvvacli.utils.InfoCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +29,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
-public class BaseHandler extends CommandHandler {
-    private static final Logger log = LoggerFactory.getLogger(BaseHandler.class);
+public class BuildHandler extends CommandHandler {
+    private static final Logger log = LoggerFactory.getLogger(BuildHandler.class);
 
     @Command("build")
     void build(@NonNull CommandInfo info) {

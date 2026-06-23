@@ -88,7 +88,7 @@ public class PvvaToolsHandler extends CommandHandler {
         }
     }
 
-    @Command
+    @Command("init")
     void init(@NonNull CommandInfo info) {
         String dirName = info.hasFlag("-o") ? info.getFlag("-o") : ".";
         Path outputDir = Path.of(dirName);

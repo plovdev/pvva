@@ -1,4 +1,4 @@
-package org.plovdev.pvvacli.handlers;
+package org.plovdev.pvvacli.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

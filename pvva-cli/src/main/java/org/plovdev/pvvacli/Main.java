@@ -11,9 +11,9 @@ public class Main {
 
     static void main(String[] args) {
         Commander commander = Commander.getInstance();
-        commander.registerCommandHandler(new BaseHandler());
+        commander.registerCommandHandler(new BuildHandler());
         commander.registerCommandHandler(new PvvaToolsHandler());
-        commander.registerCommandHandler(new UtilsHandler());
+        commander.registerCommandHandler(new UtilCommandsHandler());
         commander.registerCommandHandler(new ExtractEntryHandler());
         commander.registerCommandHandler(new KeysHandler());
         commander.registerCommandHandler(new UnpackHandler());
