@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.plovdev</groupId>
   <artifactId>pvva-core</artifactId>
-  <version>1.2</version>
+  <version>1.3</version>
   <name>PVVA</name>
   <description>PVVA - java lib for access with PornViewer Video Adapters.</description>
   <url>https://github.com/plovdev/PVVA</url>

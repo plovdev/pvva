@@ -16,6 +16,7 @@ import org.plovdev.pvva.transforms.ResourceConfigTransformer;
 import org.plovdev.pvva.transforms.parser.ParserTransformer;
 import org.plovdev.pvva.write.PVVAWriter;
 import org.plovdev.pvvacli.PvvaPaths;
+import org.plovdev.pvvacli.exceptions.PvvaCliException;
 import org.plovdev.pvvacli.models.BuildXml;
 import org.plovdev.pvvacli.security.Signer;
 import org.plovdev.pvvacli.transforms.BuildXmlParser;
@@ -78,7 +79,7 @@ public class BuildHandler extends CommandHandler {
             try {
                 Files.createDirectory(PvvaPaths.BUILDS_OUT);
             } catch (Exception e) {
-                throw new RuntimeException("Error to prepare file struct", e);
+                throw new PvvaCliException("Error to prepare file struct", e);
             }
         }
 

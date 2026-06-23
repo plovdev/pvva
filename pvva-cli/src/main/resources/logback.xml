@@ -10,7 +10,7 @@
     </appender>
 
     <!-- Main logger !-->
-    <logger name="com.plovdev.davinchi" level="DEBUG" additivity="false">
+    <logger name="org.plovdev.pvvacli" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
     <root level="WARN">
