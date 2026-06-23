@@ -5,6 +5,7 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -77,5 +78,16 @@ public final class PvvaPaths {
         } catch (Exception e) {
             log.error("Error copy file: ", e);
         }
+    }
+
+    public static void preparePaths(Path output) throws IOException {
+        Files.createDirectories(output);
+        Path src = output.resolve(Path.of("src"));
+        Files.createDirectory(src);
+
+        Path configs = src.resolve(Path.of("configs"));
+        Path parsers = src.resolve(Path.of("parsers"));
+        Files.createDirectory(configs);
+        Files.createDirectory(parsers);
     }
 }

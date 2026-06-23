@@ -46,12 +46,12 @@ public class ExtractEntryHandler extends CommandHandler {
     @Contract(pure = true)
     private void transformAndPrint(@NonNull String entry, PVVAHost host) {
         switch (entry) {
-            case "plugin.json" -> out.println(PluginJsonTransformer.toJson(host.pluginJson()));
-            case "resource-config" -> out.println(ResourceConfigTransformer.toJson(host.resourceConfig()));
+            case "plugin.json" -> out.println(PluginJsonTransformer.toJson(host.pluginJson(), true));
+            case "resource-config" -> out.println(ResourceConfigTransformer.toJson(host.resourceConfig(), true));
             case "http-config" -> {
                 Optional<HttpConfig> httpConfigOptional = host.optHttpConfig();
                 if (httpConfigOptional.isPresent()) {
-                    out.println(HttpConfigTransformer.toJson(httpConfigOptional.get()));
+                    out.println(HttpConfigTransformer.toJson(httpConfigOptional.get(), true));
                 } else {
                     out.println("No " + entry + " entry in adapter.");
                 }

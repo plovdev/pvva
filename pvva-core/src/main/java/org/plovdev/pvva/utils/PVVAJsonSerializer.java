@@ -3,10 +3,15 @@ package org.plovdev.pvva.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.Strictness;
 import org.jspecify.annotations.NonNull;
 
 public final class PVVAJsonSerializer {
-    public static final Gson GLOBAL_JSON = new GsonBuilder().create();
+    public static final GsonBuilder GLOBAL_JSON_BUILDER = new GsonBuilder()
+            .setStrictness(Strictness.LENIENT)
+            .disableHtmlEscaping();
+    public static final Gson GLOBAL_JSON = GLOBAL_JSON_BUILDER.create();
+    public static final Gson GLOBAL_JSON_PP = GLOBAL_JSON_BUILDER.setPrettyPrinting().create();
 
     public static String serialize(Object object) {
         return GLOBAL_JSON.toJson(object);

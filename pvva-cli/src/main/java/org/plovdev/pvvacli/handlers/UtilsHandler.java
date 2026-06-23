@@ -16,6 +16,7 @@ public class UtilsHandler extends CommandHandler {
         commands.append("pvva version - print the pvva-cli version.\n");
         commands.append("pvva help - print the list of available commands.\n");
         commands.append("\n");
+        commands.append("pvva init - Initiliaze the pvva project. Use -o={output dir} to create project in another place.");
         commands.append("pvva build - Build the project to .pvva.\n");
         commands.append("pvva info -i={input .pvva} - print the adapter info.\n");
         commands.append("pvva extract -i={input .pvva} -e={entry to extract} - extracts entry from adapter and print.\n");

@@ -7,11 +7,7 @@ public class BuildXml {
     private String minAppVersion;
     private String maxAppVersion;
     private boolean createSignature;
-    private String excludePath;
-    private String includeSource;
-    private int flag;
     private String finalName;
-    private String sign;
     private boolean createInfo;
     private String url;
 
@@ -39,44 +35,12 @@ public class BuildXml {
         this.maxAppVersion = maxAppVersion;
     }
 
-    public String getExcludePath() {
-        return excludePath;
-    }
-
-    public void setExcludePath(String excludePath) {
-        this.excludePath = excludePath;
-    }
-
-    public String getIncludeSource() {
-        return includeSource;
-    }
-
-    public void setIncludeSource(String includeSource) {
-        this.includeSource = includeSource;
-    }
-
-    public int getFlag() {
-        return flag;
-    }
-
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
-
     public String getFinalName() {
         return finalName == null ? getPluginId() : finalName;
     }
 
     public void setFinalName(String finalName) {
         this.finalName = finalName;
-    }
-
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign;
     }
 
     public boolean needCreateInfo() {
@@ -120,6 +84,10 @@ public class BuildXml {
         return String.format("%d.%d.%d", major, minor, patch);
     }
 
+    public static int generateBuildId() {
+        return (int) (System.currentTimeMillis() / 1000);
+    }
+
     @Override
     public String toString() {
         return "BuildXml{" +
@@ -127,11 +95,7 @@ public class BuildXml {
                 ", minAppVersion='" + minAppVersion + '\'' +
                 ", maxAppVersion='" + maxAppVersion + '\'' +
                 ", createSignature=" + createSignature +
-                ", excludePath='" + excludePath + '\'' +
-                ", includeSource='" + includeSource + '\'' +
-                ", flag=" + flag +
                 ", finalName='" + finalName + '\'' +
-                ", sign='" + sign + '\'' +
                 ", createInfo=" + createInfo +
                 ", url='" + url + '\'' +
                 '}';

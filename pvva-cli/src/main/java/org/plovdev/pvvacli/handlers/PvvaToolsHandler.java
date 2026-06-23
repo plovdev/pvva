@@ -10,10 +10,13 @@ import org.plovdev.pvva.models.PluginJson;
 import org.plovdev.pvva.models.configs.resourceconfig.ResourceConfig;
 import org.plovdev.pvva.read.PVVAReader;
 import org.plovdev.pvvacli.PvvaPaths;
+import org.plovdev.pvvacli.mock.MockDataCreator;
 import org.plovdev.pvvacli.models.BuildXml;
+import org.plovdev.pvvacli.transforms.BuildXmlOutUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
@@ -45,10 +48,7 @@ public class PvvaToolsHandler extends CommandHandler {
                 builder.append("\n");
                 appendString(builder, "Plugin Name", pluginJson.title());
                 appendString(builder, "Plugin Version", pluginJson.version());
-                pluginJson.autoUpdateUrl().ifPresent(url -> {
-                    appendString(builder, "Autoupdate URL", url);
-                    appendString(builder, "Sign Required", pluginJson.signRequired());
-                });
+                pluginJson.autoUpdateUrl().ifPresent(url -> appendString(builder, "Autoupdate URL", url));
                 pluginJson.author().ifPresent(author -> appendString(builder, "Author", author));
                 pluginJson.developerId().ifPresent(devId -> appendString(builder, "Developer ID", devId));
                 pluginJson.authorPage().ifPresent(authorPage -> appendString(builder, "Author Page", authorPage));
@@ -85,6 +85,29 @@ public class PvvaToolsHandler extends CommandHandler {
             }
         } else {
             System.out.println("Parameter '-i' not found");
+        }
+    }
+
+    @Command
+    void init(@NonNull CommandInfo info) {
+        String dirName = info.hasFlag("-o") ? info.getFlag("-o") : ".";
+        Path outputDir = Path.of(dirName);
+
+        try {
+            PvvaPaths.preparePaths(outputDir);
+            Files.writeString(outputDir.resolve(PvvaPaths.PLUGIN_JSON), MockDataCreator.mockPluginJson());
+            Files.writeString(outputDir.resolve(PvvaPaths.RESOURCE_CONFIG), MockDataCreator.mockResourceConfig());
+            Files.writeString(outputDir.resolve(PvvaPaths.HTTP_CONFIG), MockDataCreator.mockHttpConfig());
+            Files.writeString(outputDir.resolve(PvvaPaths.MAIN_PARSER), MockDataCreator.mockMainParser());
+
+            PVVAHeader mockHeader = new PVVAHeader((byte) 1, (byte) 0, true, BuildXml.generateBuildId(), (byte) 0, "", 20000, 30000, 0);
+            BuildXmlOutUtils.restoreBuildXml(mockHeader, outputDir.resolve(PvvaPaths.BUILD_XML));
+
+            System.out.println("Pvva project generated.");
+            System.out.println("Implement parsers, controllers and configs, and enjoy watching.");
+            System.out.println("For build .pvva enter 'pvva build'");
+        } catch (Exception e) {
+            log.error("Error init pvva project");
         }
     }
 }

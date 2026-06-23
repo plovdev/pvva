@@ -8,53 +8,85 @@ import org.plovdev.pvva.utils.PVVAJsonSerializer;
 import static org.plovdev.pvva.utils.PVVAJsonSerializer.extractString;
 
 public final class PluginJsonTransformer {
+    public static final String TITLE = "title";
+    public static final String VERSION = "version";
+    public static final String DESCRIPTION = "description";
+    public static final String COMMONS = "commons";
+
+    public static final String LEGAL = "legal";
+    public static final String AUTHOR = "author";
+    public static final String DEVELOPER_ID = "developer-id";
+    public static final String AUTHOR_PAGE = "author-page";
+    public static final String LICENSE = "license";
+    public static final String HOMEPAGE = "homepage";
+
+    public static final String AUTO_UPDATE = "auto-update";
+    public static final String AUTO_UPDATE_URL = "url";
+
     private PluginJsonTransformer() {
     }
 
     public static @NonNull PluginJson ofJson(String json) {
         JsonObject pluginJson = PVVAJsonSerializer.GLOBAL_JSON.fromJson(json, JsonObject.class);
-        JsonObject commons = pluginJson.get("commons").getAsJsonObject();
+        JsonObject commons = pluginJson.get(COMMONS).getAsJsonObject();
 
-        String title = extractString("title", commons);
-        String version = extractString("version", commons);
-        String description = extractString("description", commons);
+        String title = extractString(TITLE, commons);
+        String version = extractString(VERSION, commons);
+        String description = extractString(DESCRIPTION, commons);
 
-        JsonObject legal = pluginJson.get("legal").getAsJsonObject();
-        String author = extractString("author", legal);
-        String devId = extractString("developer-id", legal);
-        String authorPage = extractString("author-page", legal);
-        String license = extractString("license", legal);
-        String homepage = extractString("homepage", legal);
+        String updateUrl = null;
+        if (pluginJson.has(AUTO_UPDATE)) {
+            JsonObject autoUpdate = pluginJson.get(AUTO_UPDATE).getAsJsonObject();
+            updateUrl = extractString(AUTO_UPDATE_URL, commons);
+        }
 
-        JsonObject autoUpdate = pluginJson.get("auto-update").getAsJsonObject();
-        String updateUrl = extractString("url", commons);
-        boolean seignRequired = Boolean.getBoolean(extractString("sign-required", commons));
+        String author = null;
+        String devId = null;
+        String authorPage = null;
+        String license = null;
+        String homepage = null;
 
-        return new PluginJson(title, version, description, updateUrl, seignRequired, author, devId, authorPage, license, homepage);
+        if (pluginJson.has(LEGAL)) {
+            JsonObject legal = pluginJson.get(LEGAL).getAsJsonObject();
+            author = extractString(AUTHOR, legal);
+            devId = extractString(DESCRIPTION, legal);
+            authorPage = extractString(AUTHOR_PAGE, legal);
+            license = extractString(LICENSE, legal);
+            homepage = extractString(HOMEPAGE, legal);
+        }
+
+        return new PluginJson(title, version, description, updateUrl, author, devId, authorPage, license, homepage);
     }
 
     public static String toJson(@NonNull PluginJson json) {
+        return toJson(json, false);
+    }
+
+    public static String toJson(@NonNull PluginJson json, boolean prettyPrint) {
         JsonObject pluginJson = new JsonObject();
 
         JsonObject commons = new JsonObject();
-        commons.addProperty("title", json.title());
-        commons.addProperty("version", json.version());
-        json.description().ifPresent(description -> commons.addProperty("description", description));
-        pluginJson.add("commons", commons);
+        commons.addProperty(TITLE, json.title());
+        commons.addProperty(VERSION, json.version());
+        json.description().ifPresent(description -> commons.addProperty(DESCRIPTION, description));
+        pluginJson.add(COMMONS, commons);
 
         JsonObject autoUpdate = new JsonObject();
-        json.autoUpdateUrl().ifPresent(url -> autoUpdate.addProperty("url", url));
-        autoUpdate.addProperty("sign-required", json.signRequired());
-        pluginJson.add("auto-update", autoUpdate);
+        json.autoUpdateUrl().ifPresent(url -> autoUpdate.addProperty(AUTO_UPDATE_URL, url));
+        pluginJson.add(AUTO_UPDATE, autoUpdate);
 
         JsonObject legal = new JsonObject();
-        json.author().ifPresent(author -> legal.addProperty("author", author));
-        json.developerId().ifPresent(devId -> legal.addProperty("developer-id", devId));
-        json.authorPage().ifPresent(page -> legal.addProperty("author-page", page));
-        json.licenseUrl().ifPresent(url -> legal.addProperty("license", url));
-        json.homepage().ifPresent(homepage -> legal.addProperty("homepage", homepage));
-        pluginJson.add("legal", legal);
+        json.author().ifPresent(author -> legal.addProperty(AUTHOR, author));
+        json.developerId().ifPresent(devId -> legal.addProperty(DEVELOPER_ID, devId));
+        json.authorPage().ifPresent(page -> legal.addProperty(AUTHOR_PAGE, page));
+        json.licenseUrl().ifPresent(url -> legal.addProperty(LICENSE, url));
+        json.homepage().ifPresent(homepage -> legal.addProperty(HOMEPAGE, homepage));
+        pluginJson.add(LEGAL, legal);
 
-        return PVVAJsonSerializer.GLOBAL_JSON.toJson(pluginJson);
+        if (prettyPrint) {
+            return PVVAJsonSerializer.GLOBAL_JSON_PP.toJson(pluginJson);
+        } else {
+            return PVVAJsonSerializer.GLOBAL_JSON.toJson(pluginJson);
+        }
     }
 }

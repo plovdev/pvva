@@ -38,7 +38,6 @@ public class BaseHandler extends CommandHandler {
         String pluginJsonRaw = PvvaPaths.allString(PvvaPaths.PLUGIN_JSON);
         byte[] pluginJsonBytes = PluginJsonTransformer.toJson(PluginJsonTransformer.ofJson(pluginJsonRaw)).getBytes(StandardCharsets.UTF_8);
 
-        int buildId = (int) (System.currentTimeMillis() / 1000);
         BuildXml buildXml = BuildXmlParser.parse(PvvaPaths.BUILD_XML);
         String pluginId = buildXml.getPluginId();
         String finalName = buildXml.getFinalName() + ".pvva";
@@ -47,7 +46,7 @@ public class BaseHandler extends CommandHandler {
             PvvaPaths.delete(PvvaPaths.BUILDS_OUT.resolve(finalName));
         }
 
-        PVVAHeader header = new PVVAHeader((byte) 1, (byte) buildXml.getFlag(), buildXml.isCreateSignature(), buildId, (byte) pluginId.length(), pluginId, BuildXml.versionToInt(buildXml.getMinAppVersion()), BuildXml.versionToInt(buildXml.getMaxAppVersion()), pluginJsonBytes.length);
+        PVVAHeader header = new PVVAHeader((byte) 1, (byte) 0, buildXml.isCreateSignature(), BuildXml.generateBuildId(), (byte) pluginId.length(), pluginId, BuildXml.versionToInt(buildXml.getMinAppVersion()), BuildXml.versionToInt(buildXml.getMaxAppVersion()), pluginJsonBytes.length);
 
         PluginJson pluginJson = null;
         ResourceConfig resourceConfig = null;

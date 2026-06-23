@@ -11,7 +11,6 @@ public final class PluginJson {
     private final String version;
     private final String description;
     private final String autoUpdateUrl;
-    private final boolean signRequired;
     private final String author;
     private final String developerId;
     private final String authorPage;
@@ -24,7 +23,6 @@ public final class PluginJson {
 
             @Nullable String description,
             @Nullable String autoUpdateUrl,
-            boolean signRequired,
             @Nullable String author,
             @Nullable String developerId,
             @Nullable String authorPage,
@@ -35,7 +33,6 @@ public final class PluginJson {
         this.version = Objects.requireNonNull(version);
         this.description = description;
         this.autoUpdateUrl = autoUpdateUrl;
-        this.signRequired = signRequired;
         this.author = author;
         this.developerId = developerId;
         this.authorPage = authorPage;
@@ -61,10 +58,6 @@ public final class PluginJson {
 
     public @NonNull Optional<String> autoUpdateUrl() {
         return Optional.ofNullable(autoUpdateUrl);
-    }
-
-    public boolean signRequired() {
-        return signRequired;
     }
 
     public @NonNull Optional<String> author() {
@@ -94,7 +87,6 @@ public final class PluginJson {
                 ", version='" + version + '\'' +
                 ", description='" + description + '\'' +
                 ", autoUpdateUrl='" + autoUpdateUrl + '\'' +
-                ", signRequired=" + signRequired +
                 ", author='" + author + '\'' +
                 ", developerId='" + developerId + '\'' +
                 ", authorPage='" + authorPage + '\'' +

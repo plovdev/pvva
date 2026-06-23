@@ -19,5 +19,20 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jspecify.version>1.0.0</jspecify.version>
+        <jb-annos.version>24.0.0</jb-annos.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <version>${jspecify.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>${jb-annos.version}</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -1,6 +1,8 @@
 package org.plovdev.pvvacli.transforms;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.plovdev.pvvacli.exceptions.PvvaCliException;
 import org.plovdev.pvvacli.models.BuildXml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,31 +27,21 @@ public class BuildXmlParser {
 
             buildXml.setMinAppVersion(getElementText(doc, "min-app-version"));
             buildXml.setMaxAppVersion(getElementText(doc, "max-app-version"));
-
             buildXml.setCreateSignature(Boolean.parseBoolean(getElementText(doc, "create-sign")));
 
-            buildXml.setExcludePath(getElementText(doc, "path"));
-            buildXml.setIncludeSource(getElementText(doc, "source"));
-
-            String flagStr = getElementText(doc, "flag");
-            buildXml.setFlag(flagStr.isEmpty() ? 0 : Integer.parseInt(flagStr));
-
             buildXml.setFinalName(getElementText(doc, "final-name"));
-            buildXml.setSign(getElementText(doc, "sign"));
-
             buildXml.setCreateInfo(Boolean.parseBoolean(getElementText(doc, "create-info")));
             buildXml.setUrl(getElementText(doc, "url"));
             return buildXml;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new PvvaCliException(e);
         }
     }
 
-    private static @NonNull String getElementText(@NonNull Document doc, String tagName) {
+    private static @Nullable String getElementText(@NonNull Document doc, String tagName) {
         NodeList nodes = doc.getElementsByTagName(tagName);
         if (nodes.getLength() > 0) {
-            String text = nodes.item(0).getTextContent();
-            return text != null ? text.trim() : "";
+            return nodes.item(0).getTextContent();
         }
         return null;
     }
