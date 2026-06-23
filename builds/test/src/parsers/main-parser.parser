@@ -1,0 +1,15 @@
+function parseVideos(htmlstr)
+    return nil
+end
+
+function parseCategories(htmlstr)
+    return nil
+end
+
+function parseModels(htmlstr)
+    return nil
+end
+
+function parseVideoPage(htmlstr)
+    return nil
+end

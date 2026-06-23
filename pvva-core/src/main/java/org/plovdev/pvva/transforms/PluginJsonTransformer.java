@@ -49,7 +49,7 @@ public final class PluginJsonTransformer {
         if (pluginJson.has(LEGAL)) {
             JsonObject legal = pluginJson.get(LEGAL).getAsJsonObject();
             author = extractString(AUTHOR, legal);
-            devId = extractString(DESCRIPTION, legal);
+            devId = extractString(DEVELOPER_ID, legal);
             authorPage = extractString(AUTHOR_PAGE, legal);
             license = extractString(LICENSE, legal);
             homepage = extractString(HOMEPAGE, legal);
