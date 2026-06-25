@@ -58,7 +58,7 @@ public class PVVAWriter implements AutoCloseable {
     }
 
     private void writeHeader(@NonNull PVVAHost host, @NonNull PVVAHeader header) throws IOException {
-        byte[] compressedJsonBytes = compress(PluginJsonTransformer.toJson(host.pluginJson()).getBytes(StandardCharsets.UTF_8));
+        byte[] compressedJsonBytes = compress(PluginJsonTransformer.toJson(host.pluginJson()).getBytes(StandardCharsets.UTF_8), compressLevel);
 
         ByteBuffer buffer = ByteBuffer.allocate(PVVAHeader.HEADER_SIZE);
         buffer.put(header.getVersion());
@@ -88,7 +88,7 @@ public class PVVAWriter implements AutoCloseable {
     }
 
     private void writeResourceConfig(@NonNull ResourceConfig config) throws IOException {
-        byte[] rcJsonBytes = compress(ResourceConfigTransformer.toJson(config).getBytes(StandardCharsets.UTF_8));
+        byte[] rcJsonBytes = compress(ResourceConfigTransformer.toJson(config).getBytes(StandardCharsets.UTF_8), compressLevel);
 
         ByteBuffer configBuffer = ByteBuffer.allocate(5);
         configBuffer.put((byte) RESOURCE_CONFIG.length());
@@ -101,7 +101,7 @@ public class PVVAWriter implements AutoCloseable {
     }
 
     private void writeMainParser(MainParser parser) throws IOException {
-        byte[] bytes = compress(ParserTransformer.toParser(parser).getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = compress(ParserTransformer.toParser(parser).getBytes(StandardCharsets.UTF_8), compressLevel);
 
         ByteBuffer configBuffer = ByteBuffer.allocate(5);
         configBuffer.put((byte) MAIN_PARSER.length());
@@ -115,7 +115,7 @@ public class PVVAWriter implements AutoCloseable {
     }
 
     private void writeHttpConfig(HttpConfig config) throws IOException {
-        byte[] hcBytes = compress(HttpConfigTransformer.toJson(config).getBytes(StandardCharsets.UTF_8));
+        byte[] hcBytes = compress(HttpConfigTransformer.toJson(config).getBytes(StandardCharsets.UTF_8), compressLevel);
 
         ByteBuffer configBuffer = ByteBuffer.allocate(5);
         configBuffer.put((byte) HTTP_CONFIG.length());

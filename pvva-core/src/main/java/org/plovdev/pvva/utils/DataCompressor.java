@@ -9,8 +9,8 @@ import java.util.zip.Inflater;
 
 @SuppressWarnings("resource")
 public final class DataCompressor {
-    public static byte @NonNull [] compress(byte[] src) {
-        Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
+    public static byte @NonNull [] compress(byte[] src, int level) {
+        Deflater deflater = new Deflater(level);
         deflater.setInput(src);
         deflater.finish();
 
