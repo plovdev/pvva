@@ -15,7 +15,7 @@ public final class DataCompressor {
         deflater.finish();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[512];
+        byte[] buffer = new byte[1024];
         while (!deflater.finished()) {
             int compressedSize = deflater.deflate(buffer);
             outputStream.write(buffer, 0, compressedSize);

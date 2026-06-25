@@ -131,4 +131,40 @@ public class BuildHandler extends CommandHandler {
             }
         });
     }
+
+    @Command("install")
+    void install(@NonNull CommandInfo info) {
+        if (!info.hasFlag("-i")) {
+            log.error("Parameter -i not found");
+            return;
+        }
+        Path from = Path.of(info.getFlag("-i"));
+        if (Files.notExists(from)) {
+            System.out.println("Input .pvva not found.");
+            return;
+        }
+
+        Path pvvaName = from.getFileName();
+        Path to = PvvaPaths.PLUGINS_HOME.resolve(pvvaName);
+        if (info.hasFlag("re")) {
+            PvvaPaths.delete(to);
+        } else {
+            if (Files.exists(to)) {
+                log.info("Adapter {} already installed.", to);
+                return;
+            }
+        }
+
+        if (info.hasFlag("re")) {
+            PvvaPaths.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
+            log.info("{} Re-installed to app.", pvvaName);
+        } else {
+            try {
+                Files.copy(from, to);
+                log.info("{} Installed to app.", pvvaName);
+            } catch (Exception e) {
+                log.error("Error install plugin: ", e);
+            }
+        }
+    }
 }

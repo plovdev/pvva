@@ -7,7 +7,7 @@ import org.plovdev.commaidle.commands.handlers.CommandHandler;
 public class UtilCommandsHandler extends CommandHandler {
     @Command("version")
     void version(CommandInfo info) {
-        System.out.println("PVVA-CLI version 1.3; build 2026w8.");
+        System.out.println("PVVA-CLI version 1.4; build 2026w1.");
     }
 
     @Command("help")
@@ -17,10 +17,14 @@ public class UtilCommandsHandler extends CommandHandler {
         commands.append("pvva help - print the list of available commands.\n");
         commands.append("\n");
         commands.append("pvva init - Initiliaze the pvva project. Use -o={output dir} to create project in another place.");
-        commands.append("pvva build - Build the project to .pvva.\n");
+        commands.append("pvva build [install] - Build the project to .pvva. User -re to replae existing builded adapter. install - install builded adapter in app.\n");
+        commands.append("pvva install -i={input .pvva} - Install input adapter in app. User -re to replace already installed adapter.\n");
+        commands.append("\n");
         commands.append("pvva info -i={input .pvva} - print the adapter info.\n");
         commands.append("pvva extract -i={input .pvva} -e={entry to extract} - extracts entry from adapter and print.\n");
         commands.append("pvva unpack -i={input .pvva} - unpacks pvva to current or specified dir(use -o={output/dir}.\n");
+        commands.append("\n");
+        commands.append("pvva test - Tests adapter by regex templates(exp).");
         commands.append("\n");
         commands.append("pvva keys --init - initiate key pair and print public key. User -re for reinitiate.\n");
         commands.append("pvva keys --public - print public key.\n");
