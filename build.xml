@@ -7,6 +7,7 @@
     </properties>
 
     <build>
+        <compress-level>9</compress-level>
         <final-name>Porn365</final-name>
         <create-info>true</create-info>
         <url>

@@ -45,6 +45,7 @@ public final class InfoCreator {
         info.addProperty("pluginId", pluginId);
         info.addProperty("buildId", buildId);
         if (url != null) {
+            url = url.replace("\n", "").replace(" ", "");
             info.addProperty("url", url);
         }
         info.addProperty("sign", sign);

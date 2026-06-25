@@ -10,6 +10,7 @@ public class BuildXml {
     private String finalName;
     private boolean createInfo;
     private String url;
+    private int compressLevel = 9;
 
     public String getPluginId() {
         return pluginId;
@@ -67,6 +68,14 @@ public class BuildXml {
         this.createSignature = createSignature;
     }
 
+    public int getCompressLevel() {
+        return compressLevel;
+    }
+
+    public void setCompressLevel(int compressLevel) {
+        this.compressLevel = compressLevel;
+    }
+
     public static int versionToInt(@NonNull String version) {
         String[] parts = version.split("\\.");
         int major = Integer.parseInt(parts[0]);
@@ -98,6 +107,7 @@ public class BuildXml {
                 ", finalName='" + finalName + '\'' +
                 ", createInfo=" + createInfo +
                 ", url='" + url + '\'' +
+                ", compressLevel=" + compressLevel +
                 '}';
     }
 }

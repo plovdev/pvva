@@ -29,11 +29,13 @@ public class PVVAWriter implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(PVVAWriter.class);
     private final FileChannel writeChannel;
     private final Path writeSource;
+    private final int compressLevel;
 
-    public PVVAWriter(Path path) throws IOException {
+    public PVVAWriter(Path path, int compressLevel) throws IOException {
         Objects.requireNonNull(path);
         writeSource = path;
         writeChannel = FileChannel.open(path, StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
+        this.compressLevel = compressLevel;
     }
 
     public Path getWriteSource() {

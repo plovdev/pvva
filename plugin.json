@@ -5,7 +5,7 @@
     "description": "PornViewer Adapter for porn365 site. Provides all needly resources for PornViewer."
   },
   "auto-update": {
-    "sign-required": false
+    "url": "https://raw.githubusercontent.com/plovdev/PornViewer/refs/heads/pv-legacy/plugins/files/porn365.json"
   },
   "legal": {
     "author": "PlovDev",

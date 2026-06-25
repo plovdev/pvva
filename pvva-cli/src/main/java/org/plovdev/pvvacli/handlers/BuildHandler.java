@@ -24,6 +24,7 @@ import org.plovdev.pvvacli.utils.InfoCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,17 +37,22 @@ public class BuildHandler extends CommandHandler {
     @Command("build")
     void build(@NonNull CommandInfo info) {
         boolean isSuccessful = false;
+        BuildXml buildXml = BuildXmlParser.parse(PvvaPaths.BUILD_XML);
+        String finalName = buildXml.getFinalName() + ".pvva";
+
+        Path pvvaOut = PvvaPaths.BUILDS_OUT.resolve(finalName);
+        if (info.hasFlag("re")) {
+            PvvaPaths.delete(pvvaOut);
+        } else {
+            if (Files.exists(pvvaOut)) {
+                log.info("Adapter {} already exists.", pvvaOut);
+                return;
+            }
+        }
 
         String pluginJsonRaw = PvvaPaths.allString(PvvaPaths.PLUGIN_JSON);
         byte[] pluginJsonBytes = PluginJsonTransformer.toJson(PluginJsonTransformer.ofJson(pluginJsonRaw)).getBytes(StandardCharsets.UTF_8);
-
-        BuildXml buildXml = BuildXmlParser.parse(PvvaPaths.BUILD_XML);
         String pluginId = buildXml.getPluginId();
-        String finalName = buildXml.getFinalName() + ".pvva";
-
-        if (info.hasFlag("re")) {
-            PvvaPaths.delete(PvvaPaths.BUILDS_OUT.resolve(finalName));
-        }
 
         PVVAHeader header = new PVVAHeader((byte) 1, (byte) 0, buildXml.isCreateSignature(), BuildXml.generateBuildId(), (byte) pluginId.length(), pluginId, BuildXml.versionToInt(buildXml.getMinAppVersion()), BuildXml.versionToInt(buildXml.getMaxAppVersion()), pluginJsonBytes.length);
 
@@ -83,7 +89,7 @@ public class BuildHandler extends CommandHandler {
             }
         }
 
-        try (PVVAWriter writer = new PVVAWriter(PvvaPaths.BUILDS_OUT.resolve(finalName))) {
+        try (PVVAWriter writer = new PVVAWriter(pvvaOut, buildXml.getCompressLevel())) {
             writer.writeVideoAdapter(host);
             if (buildXml.isCreateSignature()) {
                 writer.appendSignature(Signer.getSignature(writer.getWritedData().array()));
@@ -101,6 +107,11 @@ public class BuildHandler extends CommandHandler {
             log.info("Adapter packed successful");
         } else {
             log.warn("Adapter was not packed success");
+            try {
+                Files.deleteIfExists(pvvaOut);
+            } catch (IOException e) {
+                log.error("Error cleanup builded data: ", e);
+            }
             return;
         }
 
@@ -111,8 +122,12 @@ public class BuildHandler extends CommandHandler {
                 PvvaPaths.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
                 log.info("Re Installed");
             } else {
-                PvvaPaths.copy(from, to);
-                log.info("Installed");
+                try {
+                    Files.copy(from, to);
+                    log.info("Installed");
+                } catch (Exception e) {
+                    log.error("Error install plugin: ", e);
+                }
             }
         });
     }
