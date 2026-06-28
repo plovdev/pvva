@@ -10,6 +10,7 @@ import org.plovdev.pvva.models.PluginJson;
 import org.plovdev.pvva.models.configs.httpconfig.HttpConfig;
 import org.plovdev.pvva.models.configs.resourceconfig.ResourceConfig;
 import org.plovdev.pvva.models.parsers.MainParser;
+import org.plovdev.pvva.models.table.EntriesOffsetTable;
 import org.plovdev.pvva.transforms.HttpConfigTransformer;
 import org.plovdev.pvva.transforms.PluginJsonTransformer;
 import org.plovdev.pvva.transforms.ResourceConfigTransformer;
@@ -29,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 import java.util.Objects;
 
 public class BuildHandler extends CommandHandler {
@@ -56,7 +58,9 @@ public class BuildHandler extends CommandHandler {
         byte[] pluginJsonBytes = PluginJsonTransformer.toJson(pluginJson).getBytes(StandardCharsets.UTF_8);
         String pluginId = buildXml.getPluginId();
 
-        PVVAHeader header = new PVVAHeader((byte) 1, (byte) 0, buildXml.isCreateSignature(), BuildXml.generateBuildId(), (byte) pluginId.length(), pluginId, BuildXml.versionToInt(buildXml.getMinAppVersion()), BuildXml.versionToInt(buildXml.getMaxAppVersion()), pluginJsonBytes.length);
+        byte pluginIdLength = (byte) pluginId.length();
+        int tableOffset = PVVAHeader.ABS_HEADER_SIZE + pluginIdLength;
+        PVVAHeader header = new PVVAHeader((byte) 1, (byte) 0, buildXml.isCreateSignature(), BuildXml.generateBuildId(), pluginIdLength, BuildXml.versionToInt(buildXml.getMinAppVersion()), BuildXml.versionToInt(buildXml.getMaxAppVersion()), pluginJsonBytes.length, tableOffset, pluginId);
 
         ResourceConfig resourceConfig = null;
         HttpConfig httpConfig = null;
@@ -78,7 +82,7 @@ public class BuildHandler extends CommandHandler {
             }
         }
 
-        PVVAHost host = new PVVAHost(Objects.requireNonNull(header), Objects.requireNonNull(pluginJson), Objects.requireNonNull(resourceConfig), Objects.requireNonNull(httpConfig), Objects.requireNonNull(mainParser), null);
+        PVVAHost host = new PVVAHost(Objects.requireNonNull(header), new EntriesOffsetTable((short) 0, (byte) 0, Map.of()), Objects.requireNonNull(pluginJson), Objects.requireNonNull(resourceConfig), Objects.requireNonNull(httpConfig), Objects.requireNonNull(mainParser), Map.of(), null);
         if (Files.notExists(PvvaPaths.BUILDS_OUT)) {
             try {
                 Files.createDirectory(PvvaPaths.BUILDS_OUT);

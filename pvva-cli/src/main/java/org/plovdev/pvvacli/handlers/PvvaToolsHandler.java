@@ -8,7 +8,7 @@ import org.plovdev.pvva.models.PVVAHeader;
 import org.plovdev.pvva.models.PVVAHost;
 import org.plovdev.pvva.models.PluginJson;
 import org.plovdev.pvva.models.configs.resourceconfig.ResourceConfig;
-import org.plovdev.pvva.read.PVVAReader;
+import org.plovdev.pvva.read.PVVAReaderImplOld;
 import org.plovdev.pvvacli.PvvaPaths;
 import org.plovdev.pvvacli.mock.MockDataCreator;
 import org.plovdev.pvvacli.models.BuildXml;
@@ -29,7 +29,7 @@ public class PvvaToolsHandler extends CommandHandler {
     void info(@NonNull CommandInfo info) {
         if (info.hasFlag("-i")) {
             Path pvva = Path.of(info.getFlag("-i"));
-            try (PVVAReader reader = new PVVAReader(pvva)) {
+            try (PVVAReaderImplOld reader = new PVVAReaderImplOld(pvva)) {
                 PVVAHost host = reader.parseVideoAdapter();
                 PVVAHeader header = host.header();
 
@@ -100,7 +100,7 @@ public class PvvaToolsHandler extends CommandHandler {
             Files.writeString(outputDir.resolve(PvvaPaths.HTTP_CONFIG), MockDataCreator.mockHttpConfig());
             Files.writeString(outputDir.resolve(PvvaPaths.MAIN_PARSER), MockDataCreator.mockMainParser());
 
-            PVVAHeader mockHeader = new PVVAHeader((byte) 1, (byte) 0, true, BuildXml.generateBuildId(), (byte) 0, "", 20000, 30000, 0);
+            PVVAHeader mockHeader = new PVVAHeader((byte) 1, (byte) 0, true, BuildXml.generateBuildId(), (byte) 0,  20000, 30000, 0, 0, "");
             BuildXmlOutUtils.restoreBuildXml(mockHeader, outputDir.resolve(PvvaPaths.BUILD_XML));
 
             System.out.println("Pvva project generated.");

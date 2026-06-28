@@ -2,36 +2,34 @@ package org.plovdev.pvva.models;
 
 public final class PVVAHeader {
     public static final String MAGIC_NUMBER = "PVVA";
-    public static final int HEADER_SIZE = 24;
+    public static final int HEADER_SIZE = 28;
+    public static final int ABS_HEADER_SIZE = MAGIC_NUMBER.length() + HEADER_SIZE;
 
     private byte version;
     private byte flag;
     private boolean hasSign;
     private int buildId;
     private byte idlength;
-    private String pluginId;
     private int minAppVersion;
     private int maxAppVersion;
     private int jsonSize;
+    public int tableOffset;
+    private String pluginId;
 
-    public PVVAHeader(byte version,
-                      byte flag,
-                      boolean hasSign,
-                      int buildId,
-                      byte idlength,
-                      String pluginId,
-                      int minAppVersion,
-                      int maxAppVersion,
-                      int jsonSize) {
+    public PVVAHeader(byte version, byte flag, boolean hasSign, int buildId, byte idlength, int minAppVersion, int maxAppVersion, int jsonSize, int tableOffset, String pluginId) {
         this.version = version;
         this.flag = flag;
         this.hasSign = hasSign;
         this.buildId = buildId;
         this.idlength = idlength;
-        this.pluginId = pluginId;
         this.minAppVersion = minAppVersion;
         this.maxAppVersion = maxAppVersion;
         this.jsonSize = jsonSize;
+        this.tableOffset = tableOffset;
+        this.pluginId = pluginId;
+    }
+
+    public PVVAHeader() {
     }
 
     public byte getVersion() {
@@ -74,14 +72,6 @@ public final class PVVAHeader {
         this.idlength = idlength;
     }
 
-    public String getPluginId() {
-        return pluginId;
-    }
-
-    public void setPluginId(String pluginId) {
-        this.pluginId = pluginId;
-    }
-
     public int getMinAppVersion() {
         return minAppVersion;
     }
@@ -106,18 +96,35 @@ public final class PVVAHeader {
         this.jsonSize = jsonSize;
     }
 
-    @Override
-    public String toString() {
-        return "PVVAHeader[" +
-                "version=" + version + ", " +
-                "flag=" + flag + ", " +
-                "hasSign=" + hasSign + ", " +
-                "buildId=" + buildId + ", " +
-                "idlength=" + idlength + ", " +
-                "pluginId=" + pluginId + ", " +
-                "minAppVersion=" + minAppVersion + ", " +
-                "maxAppVersion=" + maxAppVersion + ", " +
-                "jsonSize=" + jsonSize + ']';
+    public int getTableOffset() {
+        return tableOffset;
     }
 
+    public void setTableOffset(int tableOffset) {
+        this.tableOffset = tableOffset;
+    }
+
+    public String getPluginId() {
+        return pluginId;
+    }
+
+    public void setPluginId(String pluginId) {
+        this.pluginId = pluginId;
+    }
+
+    @Override
+    public String toString() {
+        return "PVVAHeader{" +
+                "version=" + version +
+                ", flag=" + flag +
+                ", hasSign=" + hasSign +
+                ", buildId=" + buildId +
+                ", idlength=" + idlength +
+                ", minAppVersion=" + minAppVersion +
+                ", maxAppVersion=" + maxAppVersion +
+                ", jsonSize=" + jsonSize +
+                ", tableOffset=" + tableOffset +
+                ", pluginId='" + pluginId + '\'' +
+                '}';
+    }
 }

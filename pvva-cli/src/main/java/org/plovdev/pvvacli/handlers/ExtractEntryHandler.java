@@ -7,7 +7,7 @@ import org.plovdev.commaidle.commands.CommandInfo;
 import org.plovdev.commaidle.commands.handlers.CommandHandler;
 import org.plovdev.pvva.models.PVVAHost;
 import org.plovdev.pvva.models.configs.httpconfig.HttpConfig;
-import org.plovdev.pvva.read.PVVAReader;
+import org.plovdev.pvva.read.PVVAReaderImplOld;
 import org.plovdev.pvva.transforms.HttpConfigTransformer;
 import org.plovdev.pvva.transforms.PluginJsonTransformer;
 import org.plovdev.pvva.transforms.ResourceConfigTransformer;
@@ -35,7 +35,7 @@ public class ExtractEntryHandler extends CommandHandler {
         }
 
         Path pvva = Path.of(info.getFlag("-i"));
-        try (PVVAReader reader = new PVVAReader(pvva)) {
+        try (PVVAReaderImplOld reader = new PVVAReaderImplOld(pvva)) {
             PVVAHost host = reader.parseVideoAdapter();
             transformAndPrint(info.getFlag("-e"), host);
         } catch (Exception e) {

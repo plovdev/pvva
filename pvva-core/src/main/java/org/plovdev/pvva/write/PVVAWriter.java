@@ -3,6 +3,7 @@ package org.plovdev.pvva.write;
 import org.jspecify.annotations.NonNull;
 import org.plovdev.pvva.models.PVVAHeader;
 import org.plovdev.pvva.models.PVVAHost;
+import org.plovdev.pvva.models.chunks.Chunk;
 import org.plovdev.pvva.models.configs.httpconfig.HttpConfig;
 import org.plovdev.pvva.models.configs.resourceconfig.ResourceConfig;
 import org.plovdev.pvva.models.parsers.MainParser;
@@ -19,6 +20,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -30,6 +32,7 @@ public class PVVAWriter implements AutoCloseable {
     private final FileChannel writeChannel;
     private final Path writeSource;
     private final int compressLevel;
+    private int tableOffset = 0;
 
     public PVVAWriter(Path path, int compressLevel) throws IOException {
         Objects.requireNonNull(path);
@@ -50,6 +53,7 @@ public class PVVAWriter implements AutoCloseable {
 
         writeHeader(pvvaHost, header);
         writeChunks(pvvaHost);
+        writeOffsetTable(pvvaHost);
 
         if (header.isHasSign() && pvvaHost.signature() != null) {
             int signWriten = writeChannel.write(ByteBuffer.wrap(pvvaHost.signature()));
@@ -65,10 +69,14 @@ public class PVVAWriter implements AutoCloseable {
         buffer.put(header.getFlag());
         buffer.put((byte) (header.isHasSign() ? 1 : 0));
         buffer.putInt(header.getBuildId());
+
         buffer.put(header.getIdlength());
         buffer.putInt(header.getMinAppVersion());
         buffer.putInt(header.getMaxAppVersion());
         buffer.putInt(compressedJsonBytes.length);
+
+        tableOffset = PVVAHeader.ABS_HEADER_SIZE + header.getIdlength();
+        buffer.putInt(tableOffset);
 
         int headerWriten = writeChannel.write(buffer.flip());
         log.debug("Header bytes writen: {}", headerWriten);
@@ -78,7 +86,47 @@ public class PVVAWriter implements AutoCloseable {
         log.debug("PluginJson bytes writen: {}", jsonWriten);
     }
 
+    private void writeOffsetTable(@NonNull PVVAHost host) throws IOException {
+        long currentPosition = writeChannel.position();
+        Map<String, Chunk> chunksMap = host.chunkMap();
+        short tableSize = (short) Math.min(chunksMap.values().stream().map(Chunk::getChunkIdLength).reduce((byte) 0, (a, b) -> (byte) (a + b)) * 5, Short.MAX_VALUE);
+        byte entriesCount = (byte) Math.min(chunksMap.size(), 127);
+        int tableChunkSize = 3 + tableSize;
+        ByteBuffer tableBuffer = ByteBuffer.allocate(tableChunkSize);
+
+        tableBuffer.putShort(tableSize);
+        tableBuffer.put(entriesCount);
+
+        int accumulatedOffset = tableOffset + tableChunkSize;
+
+        for (String chunkId : chunksMap.keySet()) {
+            Chunk chunk = chunksMap.get(chunkId);
+            ByteBuffer entryHeader = ByteBuffer.allocate(5);
+            entryHeader.put(chunk.getChunkIdLength());
+            entryHeader.putInt(accumulatedOffset);
+            int ehWriten = writeChannel.write(entryHeader.flip());
+            ByteBuffer entryIdBuffer = ByteBuffer.allocate(chunk.getChunkIdLength());
+            entryIdBuffer.put(chunk.getChunkId().getBytes(StandardCharsets.US_ASCII));
+            int idWriten = writeChannel.write(entryIdBuffer.flip());
+            accumulatedOffset += (9 + chunk.getChunkSize() + chunk.getChunkIdLength());
+        }
+
+        writeChannel.position(currentPosition);
+    }
+
     private void writeChunks(@NonNull PVVAHost pvvaHost) throws IOException {
+        for (Chunk chunk : pvvaHost.chunkMap().values()) {
+            byte[] rcJsonBytes = compress(ResourceConfigTransformer.toJson(config).getBytes(StandardCharsets.UTF_8), compressLevel);
+            ByteBuffer configBuffer = ByteBuffer.allocate(5);
+            configBuffer.put((byte) RESOURCE_CONFIG.length());
+            configBuffer.putInt(rcJsonBytes.length);
+            int bufferWritten = writeChannel.write(configBuffer.flip());
+            log.debug("ResourceConfig Buffer bytes written: {}", bufferWritten);
+            int resourceNameWriten = writeChannel.write(ByteBuffer.wrap(RESOURCE_CONFIG.getBytes(StandardCharsets.US_ASCII)));
+            int resourceWriten = writeChannel.write(ByteBuffer.wrap(rcJsonBytes));
+            log.debug("Resource Config bytes writen: {}, rc name bytes written: {}", resourceWriten, resourceNameWriten);
+        }
+
         writeResourceConfig(pvvaHost.resourceConfig());
         writeMainParser(pvvaHost.mainParser());
         Optional<HttpConfig> httpConfigOpt = pvvaHost.optHttpConfig();
@@ -145,6 +193,7 @@ public class PVVAWriter implements AutoCloseable {
 
     @Override
     public void close() throws IOException {
+        writeChannel.force(true);
         writeChannel.close();
     }
 }

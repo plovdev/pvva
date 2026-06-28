@@ -2,7 +2,7 @@ package org.plovdev.pvva.models.chunks;
 
 import java.util.Arrays;
 
-public abstract class Chunk {
+public class Chunk {
     public static final String RESOURCE_CONFIG = "resource-config";
     public static final String HTTP_CONFIG = "http-config";
     public static final String MAIN_PARSER = "main-parser";
@@ -11,19 +11,37 @@ public abstract class Chunk {
     public static final int CHUNK_ID_LENGTH = 4;
     public static final int CHUNK_SIZE_LENGTH = 4;
 
-    private byte chunkIdLength;
-    private String chunkId;
-    private int chunkSize;
-    private byte[] chunkContent;
+    protected ChunkType chunkType;
+    protected int chunkSize;
+    protected byte chunkIdLength;
+    protected String chunkId;
+    protected byte[] chunkContent;
 
-    public Chunk(byte chunkIdLength, String chunkId, int chunkSize, byte[] chunkContent) {
+    public Chunk(ChunkType chunkType, int chunkSize, byte chunkIdLength, String chunkId, byte[] chunkContent) {
+        this.chunkType = chunkType;
+        this.chunkSize = chunkSize;
         this.chunkIdLength = chunkIdLength;
         this.chunkId = chunkId;
-        this.chunkSize = chunkSize;
         this.chunkContent = chunkContent;
     }
 
     public Chunk() {
+    }
+
+    public ChunkType getChunkType() {
+        return chunkType;
+    }
+
+    public void setChunkType(ChunkType chunkType) {
+        this.chunkType = chunkType;
+    }
+
+    public int getChunkSize() {
+        return chunkSize;
+    }
+
+    public void setChunkSize(int chunkSize) {
+        this.chunkSize = chunkSize;
     }
 
     public byte getChunkIdLength() {
@@ -42,14 +60,6 @@ public abstract class Chunk {
         this.chunkId = chunkId;
     }
 
-    public int getChunkSize() {
-        return chunkSize;
-    }
-
-    public void setChunkSize(int chunkSize) {
-        this.chunkSize = chunkSize;
-    }
-
     public byte[] getChunkContent() {
         return chunkContent;
     }
@@ -61,9 +71,10 @@ public abstract class Chunk {
     @Override
     public String toString() {
         return "Chunk{" +
-                "chunkIdLength=" + chunkIdLength +
-                ", chunkId='" + chunkId + '\'' +
+                "chunkType=" + chunkType +
                 ", chunkSize=" + chunkSize +
+                ", chunkIdLength=" + chunkIdLength +
+                ", chunkId='" + chunkId + '\'' +
                 ", chunkContent=" + Arrays.toString(chunkContent) +
                 '}';
     }
