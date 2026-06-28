@@ -32,8 +32,8 @@ public class KeysHandler extends CommandHandler {
                 byte[] publicKey = generator.getPublicKey();
 
                 try {
-                    KEYCHAIN.setPasswordRaw(PRIVATE, privateKey);
-                    KEYCHAIN.setPasswordRaw(PUBLIC, publicKey);
+                    KEYCHAIN.setPassword(PRIVATE, privateKey);
+                    KEYCHAIN.setPassword(PUBLIC, publicKey);
                     System.out.println("================PUBLIC KEY================");
                     System.out.println(HEX_FORMAT.formatHex(publicKey));
                 } finally {

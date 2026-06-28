@@ -7,7 +7,7 @@ import org.plovdev.commaidle.commands.handlers.CommandHandler;
 public class UtilCommandsHandler extends CommandHandler {
     @Command("version")
     void version(CommandInfo info) {
-        System.out.println("PVVA-CLI version 1.4; build 2026w1.");
+        System.out.println("PVVA-CLI version 1.5; build 2026w2.");
     }
 
     @Command("help")

@@ -19,7 +19,7 @@ public final class PvvaPaths {
     public static final Path PLUGINS_HOME = Path.of(getProperty("pv.home", getProperty("user.home") + "/.PornViewer"), "plugins");
     public static final Path HTTP_CONFIG = Path.of("src/configs/http-config.json");
     public static final Path RESOURCE_CONFIG = Path.of("src/configs/resource-config.json");
-    public static final Path MAIN_PARSER = Path.of("src/parsers/main-parser.parser");
+    public static final Path MAIN_PARSER = Path.of("src/parsers/main-parser.lua");
     public static final Path BUILDS_OUT = Path.of("builds");
 
     public enum Paths {

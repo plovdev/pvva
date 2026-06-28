@@ -5,6 +5,9 @@ import org.jspecify.annotations.NonNull;
 import org.plovdev.pvva.models.PluginJson;
 import org.plovdev.pvva.utils.PVVAJsonSerializer;
 
+import java.util.NoSuchElementException;
+import java.util.Objects;
+
 import static org.plovdev.pvva.utils.PVVAJsonSerializer.extractString;
 
 public final class PluginJsonTransformer {
@@ -40,19 +43,21 @@ public final class PluginJsonTransformer {
             updateUrl = extractString(AUTO_UPDATE_URL, commons);
         }
 
-        String author = null;
-        String devId = null;
-        String authorPage = null;
-        String license = null;
-        String homepage = null;
+        String author;
+        String devId;
+        String authorPage;
+        String license;
+        String homepage;
 
         if (pluginJson.has(LEGAL)) {
             JsonObject legal = pluginJson.get(LEGAL).getAsJsonObject();
             author = extractString(AUTHOR, legal);
-            devId = extractString(DEVELOPER_ID, legal);
+            devId = Objects.requireNonNull(extractString(DEVELOPER_ID, legal));
             authorPage = extractString(AUTHOR_PAGE, legal);
             license = extractString(LICENSE, legal);
             homepage = extractString(HOMEPAGE, legal);
+        } else {
+            throw new NoSuchElementException("Section legal not found.");
         }
 
         return new PluginJson(title, version, description, updateUrl, author, devId, authorPage, license, homepage);
@@ -77,7 +82,7 @@ public final class PluginJsonTransformer {
 
         JsonObject legal = new JsonObject();
         json.author().ifPresent(author -> legal.addProperty(AUTHOR, author));
-        json.developerId().ifPresent(devId -> legal.addProperty(DEVELOPER_ID, devId));
+        legal.addProperty(DEVELOPER_ID, json.developerId());
         json.authorPage().ifPresent(page -> legal.addProperty(AUTHOR_PAGE, page));
         json.licenseUrl().ifPresent(url -> legal.addProperty(LICENSE, url));
         json.homepage().ifPresent(homepage -> legal.addProperty(HOMEPAGE, homepage));

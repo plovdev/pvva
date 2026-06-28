@@ -1,5 +1,5 @@
 {
-  "base-url": "http://9porno365.info",
+  "base-url": "http://3porno365.run",
   "main": {
     "supports": true,
     "endpoint": "/${page}",
@@ -13,11 +13,11 @@
     "endpoint": "/models/${page}",
     "model": {
       "supports": true,
-      "endpoint": "/models/${model}"
+      "endpoint": "/models/${model-name}"
     },
     "model-search": {
       "supports": true,
-      "endpoint": "/?do\u003dajax\u0026action\u003dsearchModel\u0026model\u003d${user-input}"
+      "endpoint": "/?do=ajax&action=searchModel&model=${user-input}"
     }
   },
   "categories": {
@@ -35,9 +35,9 @@
   "mirrors": {
     "supports": true,
     "urls": [
-      "http://my.porno365.bike",
-      "http://5porno365.net",
-      "http://1porno365.info"
+      "http://4porno365.run",
+      "http://5porno365.run",
+      "http://6porno365.run"
     ]
   }
 }

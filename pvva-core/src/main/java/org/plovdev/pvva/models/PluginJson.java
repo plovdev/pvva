@@ -24,7 +24,7 @@ public final class PluginJson {
             @Nullable String description,
             @Nullable String autoUpdateUrl,
             @Nullable String author,
-            @Nullable String developerId,
+            @NonNull String developerId,
             @Nullable String authorPage,
             @Nullable String licenseUrl,
             @Nullable String homepage) {
@@ -34,7 +34,7 @@ public final class PluginJson {
         this.description = description;
         this.autoUpdateUrl = autoUpdateUrl;
         this.author = author;
-        this.developerId = developerId;
+        this.developerId = Objects.requireNonNull(developerId);
         this.authorPage = authorPage;
         this.licenseUrl = licenseUrl;
         this.homepage = homepage;
@@ -64,8 +64,8 @@ public final class PluginJson {
         return Optional.ofNullable(author);
     }
 
-    public @NonNull Optional<String> developerId() {
-        return Optional.ofNullable(developerId);
+    public @NonNull String developerId() {
+        return developerId;
     }
 
     public @NonNull Optional<String> authorPage() {

@@ -51,21 +51,19 @@ public class BuildHandler extends CommandHandler {
         }
 
         String pluginJsonRaw = PvvaPaths.allString(PvvaPaths.PLUGIN_JSON);
-        byte[] pluginJsonBytes = PluginJsonTransformer.toJson(PluginJsonTransformer.ofJson(pluginJsonRaw)).getBytes(StandardCharsets.UTF_8);
+        PluginJson pluginJson = PluginJsonTransformer.ofJson(pluginJsonRaw);
+
+        byte[] pluginJsonBytes = PluginJsonTransformer.toJson(pluginJson).getBytes(StandardCharsets.UTF_8);
         String pluginId = buildXml.getPluginId();
 
         PVVAHeader header = new PVVAHeader((byte) 1, (byte) 0, buildXml.isCreateSignature(), BuildXml.generateBuildId(), (byte) pluginId.length(), pluginId, BuildXml.versionToInt(buildXml.getMinAppVersion()), BuildXml.versionToInt(buildXml.getMaxAppVersion()), pluginJsonBytes.length);
 
-        PluginJson pluginJson = null;
         ResourceConfig resourceConfig = null;
         HttpConfig httpConfig = null;
         MainParser mainParser = null;
 
         for (PvvaPaths.Paths path : PvvaPaths.paths()) {
             switch (path) {
-                case PvvaPaths.Paths.PLUGIN_JSON:
-                    pluginJson = PluginJsonTransformer.ofJson(PvvaPaths.allString(PvvaPaths.PLUGIN_JSON));
-                    break;
                 case PvvaPaths.Paths.HTTP_CONFIG:
                     if (Files.exists(PvvaPaths.HTTP_CONFIG)) {
                         httpConfig = HttpConfigTransformer.ofJson(PvvaPaths.allString(PvvaPaths.HTTP_CONFIG));
