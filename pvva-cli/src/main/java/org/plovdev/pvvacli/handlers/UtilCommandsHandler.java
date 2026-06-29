@@ -7,7 +7,7 @@ import org.plovdev.commaidle.commands.handlers.CommandHandler;
 public class UtilCommandsHandler extends CommandHandler {
     @Command("version")
     void version(CommandInfo info) {
-        System.out.println("PVVA-CLI version 1.5; build 2026w2.");
+        System.out.println("PVVA-CLI version 1.7; build 2026w3.");
     }
 
     @Command("help")
@@ -22,6 +22,7 @@ public class UtilCommandsHandler extends CommandHandler {
         commands.append("\n");
         commands.append("pvva info -i={input .pvva} - print the adapter info.\n");
         commands.append("pvva extract -i={input .pvva} -e={entry to extract} - extracts entry from adapter and print.\n");
+        commands.append("pvva entries -i={inout .pvva} - print all entries in specified adapter. Use -v for more informative printing.\n");
         commands.append("pvva unpack -i={input .pvva} - unpacks pvva to current or specified dir(use -o={output/dir}.\n");
         commands.append("\n");
         commands.append("pvva test - Tests adapter by regex templates(exp).");

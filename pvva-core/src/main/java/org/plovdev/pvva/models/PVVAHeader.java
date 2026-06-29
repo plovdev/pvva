@@ -1,8 +1,11 @@
 package org.plovdev.pvva.models;
 
+import java.nio.charset.StandardCharsets;
+
 public final class PVVAHeader {
     public static final String MAGIC_NUMBER = "PVVA";
-    public static final int HEADER_SIZE = 28;
+    public static final byte[] MAGIC_NUMBER_BYTES = MAGIC_NUMBER.getBytes(StandardCharsets.US_ASCII);
+    public static final int HEADER_SIZE = 20;
     public static final int ABS_HEADER_SIZE = MAGIC_NUMBER.length() + HEADER_SIZE;
 
     private byte version;
@@ -12,11 +15,10 @@ public final class PVVAHeader {
     private byte idlength;
     private int minAppVersion;
     private int maxAppVersion;
-    private int jsonSize;
     public int tableOffset;
     private String pluginId;
 
-    public PVVAHeader(byte version, byte flag, boolean hasSign, int buildId, byte idlength, int minAppVersion, int maxAppVersion, int jsonSize, int tableOffset, String pluginId) {
+    public PVVAHeader(byte version, byte flag, boolean hasSign, int buildId, byte idlength, int minAppVersion, int maxAppVersion, int tableOffset, String pluginId) {
         this.version = version;
         this.flag = flag;
         this.hasSign = hasSign;
@@ -24,7 +26,6 @@ public final class PVVAHeader {
         this.idlength = idlength;
         this.minAppVersion = minAppVersion;
         this.maxAppVersion = maxAppVersion;
-        this.jsonSize = jsonSize;
         this.tableOffset = tableOffset;
         this.pluginId = pluginId;
     }
@@ -88,14 +89,6 @@ public final class PVVAHeader {
         this.maxAppVersion = maxAppVersion;
     }
 
-    public int getJsonSize() {
-        return jsonSize;
-    }
-
-    public void setJsonSize(int jsonSize) {
-        this.jsonSize = jsonSize;
-    }
-
     public int getTableOffset() {
         return tableOffset;
     }
@@ -122,7 +115,6 @@ public final class PVVAHeader {
                 ", idlength=" + idlength +
                 ", minAppVersion=" + minAppVersion +
                 ", maxAppVersion=" + maxAppVersion +
-                ", jsonSize=" + jsonSize +
                 ", tableOffset=" + tableOffset +
                 ", pluginId='" + pluginId + '\'' +
                 '}';

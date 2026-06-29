@@ -9,11 +9,7 @@
         </encoder>
     </appender>
 
-    <!-- Main logger !-->
-    <logger name="org.plovdev.pvvacli" level="DEBUG" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
-    <root level="WARN">
+    <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>
     </root>
 </configuration>

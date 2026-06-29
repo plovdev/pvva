@@ -1,17 +1,17 @@
 {
   "commons": {
-    "title": "Porn365 adapter",
-    "version": "1.0.5",
+    "title": "Porn365 Video Adapter",
+    "version": "1.0.7",
     "description": "PornViewer Adapter for porn365 site. Provides all needly resources for PornViewer."
   },
   "auto-update": {
-    "url": "https://raw.githubusercontent.com/plovdev/PornViewer/refs/heads/pv-legacy/plugins/files/porn365.json"
+    "url": "https://api.pornviewer.foundation/plugins/porn365"
   },
   "legal": {
     "author": "PlovDev",
     "developer-id": "1a2b3c4d5e6f7g8h9i0g",
     "author-page": "https://github.com/plovdev",
     "license": "https://unlicense.org",
-    "homepage": "https://github.com/plovdev/PornViewer/tree/pv-legacy/plugins/files"
+    "homepage": "https://pornviewer.foundation/plugins/porn365"
   }
 }

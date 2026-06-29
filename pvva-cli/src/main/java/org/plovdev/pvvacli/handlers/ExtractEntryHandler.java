@@ -6,8 +6,12 @@ import org.plovdev.commaidle.commands.Command;
 import org.plovdev.commaidle.commands.CommandInfo;
 import org.plovdev.commaidle.commands.handlers.CommandHandler;
 import org.plovdev.pvva.models.PVVAHost;
+import org.plovdev.pvva.models.chunks.Chunk;
+import org.plovdev.pvva.models.chunks.ChunkType;
 import org.plovdev.pvva.models.configs.httpconfig.HttpConfig;
-import org.plovdev.pvva.read.PVVAReaderImplOld;
+import org.plovdev.pvva.models.table.EntriesOffsetTable;
+import org.plovdev.pvva.read.DefaultPVVAReader;
+import org.plovdev.pvva.read.PVVAReader;
 import org.plovdev.pvva.transforms.HttpConfigTransformer;
 import org.plovdev.pvva.transforms.PluginJsonTransformer;
 import org.plovdev.pvva.transforms.ResourceConfigTransformer;
@@ -35,28 +39,63 @@ public class ExtractEntryHandler extends CommandHandler {
         }
 
         Path pvva = Path.of(info.getFlag("-i"));
-        try (PVVAReaderImplOld reader = new PVVAReaderImplOld(pvva)) {
-            PVVAHost host = reader.parseVideoAdapter();
-            transformAndPrint(info.getFlag("-e"), host);
+        try (PVVAReader reader = new DefaultPVVAReader(pvva)) {
+            PVVAHost host = reader.readVideoAdapter();
+            transformAndPrint(host, reader.extractChunk(info.getFlag("-e")));
         } catch (Exception e) {
             log.error("Error process {}:", pvva, e);
         }
     }
 
     @Contract(pure = true)
-    private void transformAndPrint(@NonNull String entry, PVVAHost host) {
-        switch (entry) {
-            case "plugin.json" -> out.println(PluginJsonTransformer.toJson(host.pluginJson(), true));
-            case "resource-config" -> out.println(ResourceConfigTransformer.toJson(host.resourceConfig(), true));
-            case "http-config" -> {
+    private void transformAndPrint(PVVAHost host, @NonNull Chunk chunk) {
+        printChunkHeader(chunk);
+        switch (chunk.getChunkId()) {
+            case Chunk.PLUGIN_JSON -> out.println(PluginJsonTransformer.toJson(host.pluginJson(), true));
+            case Chunk.RESOURCE_CONFIG -> out.println(ResourceConfigTransformer.toJson(host.resourceConfig(), true));
+            case Chunk.HTTP_CONFIG -> {
                 Optional<HttpConfig> httpConfigOptional = host.optHttpConfig();
                 if (httpConfigOptional.isPresent()) {
                     out.println(HttpConfigTransformer.toJson(httpConfigOptional.get(), true));
                 } else {
-                    out.println("No " + entry + " entry in adapter.");
+                    out.println("No http-config entry in adapter.");
                 }
             }
-            case "main-parser" -> out.println(ParserTransformer.toParser(host.mainParser()));
+            case Chunk.MAIN_PARSER -> out.println(ParserTransformer.toParser(host.mainParser()));
+            default -> out.println(chunk.stringifyChunkContent());
         }
+    }
+
+    @Command(value = "entries")
+    void entries(@NonNull CommandInfo info) {
+        if (!info.hasFlag("-i")) {
+            log.error("Parameter -i not found; command: entries.");
+            return;
+        }
+
+        Path pvva = Path.of(info.getFlag("-i"));
+        try (PVVAReader reader = new DefaultPVVAReader(pvva)) {
+            if (info.hasFlag("-v")) {
+                PVVAHost host = reader.readVideoAdapter();
+                host.chunkMap().values().forEach(this::printChunkHeader);
+            } else {
+                EntriesOffsetTable table = reader.parseOffsetTable();
+                table.entries().keySet().forEach(id -> out.println("ID: " + id));
+            }
+        } catch (Exception e) {
+            log.error("Error process {}:", pvva, e);
+        }
+    }
+
+    private void printChunkHeader(@NonNull Chunk chunk) {
+        ChunkType chunkType = chunk.getChunkType();
+        int compressedSize = chunk.getCompressedChunkSize();
+        String chunkId = chunk.getChunkId();
+
+        out.println("Chunk ID: " + chunkId);
+        out.println("Chunk Type: " + chunkType.name());
+        out.println("Chunk compressed size: " + compressedSize);
+        out.println("Chunk decompressed size: " + chunk.getContentSize());
+        out.println();
     }
 }

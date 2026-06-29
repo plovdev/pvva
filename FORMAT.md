@@ -37,13 +37,15 @@ BODY:
 
 ## Детальный разбор структуры
 
-### HEADER 28 bytes:
+### HEADER 24 bytes:
 
 Заголовок генерируется из `build.xml` файла, и файлов проекта.
 
 ```pvva-mark
+# MAGIC (PVVA)                                            // 4bytes
 --------------------------------------------------------------------
-Magic number(PVVA)                                        // 4bytes
+# HEADER:
+
 File version                                              // 1byte
 File flag                                                 // 1byte
 Contains signature                                        // 1byte
@@ -53,19 +55,27 @@ plugin id length                                          // 1byte
 MIN_APP_SUPPORTED_VERSION                                 // 4bytes
 MAX_APP_SUPPORTED_VERSION                                 // 4bytes
 
-json size                                                 // 4bytes
 table offset                                              // 4bytes
 Plugin ID                                                 // nbytes
 --------------------------------------------------------------------
 
+# TABLE:
+table size                                                // 2bytes
+entries count                                             // 1byte
+-------------
+entry id length                                           // 1byte
+entry offset                                              // 4bytes
+entry id                                                  // nbytes
+--------------------------------------------------------------------
 # BODY:
 
-plugin.json                                               // nbytes
+plugin-json                                               // chunk
+// other requires chunks
 
 -------------
 CHUNK-TYPE                                                // 4bytes
 CHUNK-SIZE                                                // 4byte
-CHUNK-ID length                                           // 1 byte
+CHUNK-ID length                                           // 1byte
 CHUNK-ID                                                  // nbyte
 CHUNK-CONTENT(compressed by zlib format)                  // nbytes
 -------------

@@ -1,6 +1,5 @@
 package org.plovdev.pvvacli;
 
-import org.jetbrains.annotations.Unmodifiable;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,27 +8,30 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 
 import static java.lang.System.getProperty;
 
 public final class PvvaPaths {
+    private static final Logger log = LoggerFactory.getLogger(PvvaPaths.class);
+
     public static final Path BUILD_XML = Path.of("build.xml");
     public static final Path PLUGIN_JSON = Path.of("plugin.json");
     public static final Path PLUGINS_HOME = Path.of(getProperty("pv.home", getProperty("user.home") + "/.PornViewer"), "plugins");
-    public static final Path HTTP_CONFIG = Path.of("src/configs/http-config.json");
-    public static final Path RESOURCE_CONFIG = Path.of("src/configs/resource-config.json");
-    public static final Path MAIN_PARSER = Path.of("src/parsers/main-parser.lua");
+
+    public static final Path PROJECT_HOME = Path.of(".");
+    public static final Path SRC_PATH = Path.of("src");
+    public static final Path CONFIGS = SRC_PATH.resolve(Path.of("configs"));
+    public static final Path SCRIPTS = SRC_PATH.resolve(Path.of("scripts"));
+    public static final Path PARSERS = SCRIPTS.resolve(Path.of("parsers"));
+    public static final Path RESOURCES = SRC_PATH.resolve(Path.of("resources"));
+
+    public static final Path HTTP_CONFIG = CONFIGS.resolve(Path.of("http-config.json"));
+    public static final Path RESOURCE_CONFIG = CONFIGS.resolve(Path.of("resource-config.json"));
+    public static final Path MAIN_PARSER = PARSERS.resolve(Path.of("main-parser.lua"));
     public static final Path BUILDS_OUT = Path.of("builds");
 
     public enum Paths {
         BUILD_XML, PLUGIN_JSON, HTTP_CONFIG, RESOURCE_CONFIG, MAIN_PARSER
-    }
-
-    private static final Logger log = LoggerFactory.getLogger(PvvaPaths.class);
-
-    public static @NonNull @Unmodifiable List<Paths> paths() {
-        return List.of(Paths.values());
     }
 
     public static @NonNull String allString(Path path) {
@@ -82,12 +84,10 @@ public final class PvvaPaths {
 
     public static void preparePaths(Path output) throws IOException {
         Files.createDirectories(output);
-        Path src = output.resolve(Path.of("src"));
-        Files.createDirectory(src);
 
-        Path configs = src.resolve(Path.of("configs"));
-        Path parsers = src.resolve(Path.of("parsers"));
-        Files.createDirectory(configs);
-        Files.createDirectory(parsers);
+        Files.createDirectory(SRC_PATH);
+        Files.createDirectory(CONFIGS);
+        Files.createDirectories(PARSERS);
+        Files.createDirectories(RESOURCES);
     }
 }

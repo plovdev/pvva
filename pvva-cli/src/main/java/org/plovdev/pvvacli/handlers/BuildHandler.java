@@ -5,19 +5,12 @@ import org.plovdev.commaidle.commands.Command;
 import org.plovdev.commaidle.commands.CommandInfo;
 import org.plovdev.commaidle.commands.handlers.CommandHandler;
 import org.plovdev.pvva.models.PVVAHeader;
-import org.plovdev.pvva.models.PVVAHost;
-import org.plovdev.pvva.models.PluginJson;
-import org.plovdev.pvva.models.configs.httpconfig.HttpConfig;
-import org.plovdev.pvva.models.configs.resourceconfig.ResourceConfig;
-import org.plovdev.pvva.models.parsers.MainParser;
-import org.plovdev.pvva.models.table.EntriesOffsetTable;
-import org.plovdev.pvva.transforms.HttpConfigTransformer;
-import org.plovdev.pvva.transforms.PluginJsonTransformer;
-import org.plovdev.pvva.transforms.ResourceConfigTransformer;
-import org.plovdev.pvva.transforms.parser.ParserTransformer;
+import org.plovdev.pvva.models.WritablePVVAHost;
+import org.plovdev.pvva.write.DefaultPVVAWriter;
 import org.plovdev.pvva.write.PVVAWriter;
 import org.plovdev.pvvacli.PvvaPaths;
 import org.plovdev.pvvacli.exceptions.PvvaCliException;
+import org.plovdev.pvvacli.handlers.utils.BuildHandlerHelper;
 import org.plovdev.pvvacli.models.BuildXml;
 import org.plovdev.pvvacli.security.Signer;
 import org.plovdev.pvvacli.transforms.BuildXmlParser;
@@ -26,11 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
 import java.util.Objects;
 
 public class BuildHandler extends CommandHandler {
@@ -52,49 +43,18 @@ public class BuildHandler extends CommandHandler {
             }
         }
 
-        String pluginJsonRaw = PvvaPaths.allString(PvvaPaths.PLUGIN_JSON);
-        PluginJson pluginJson = PluginJsonTransformer.ofJson(pluginJsonRaw);
-
-        byte[] pluginJsonBytes = PluginJsonTransformer.toJson(pluginJson).getBytes(StandardCharsets.UTF_8);
         String pluginId = buildXml.getPluginId();
-
         byte pluginIdLength = (byte) pluginId.length();
         int tableOffset = PVVAHeader.ABS_HEADER_SIZE + pluginIdLength;
-        PVVAHeader header = new PVVAHeader((byte) 1, (byte) 0, buildXml.isCreateSignature(), BuildXml.generateBuildId(), pluginIdLength, BuildXml.versionToInt(buildXml.getMinAppVersion()), BuildXml.versionToInt(buildXml.getMaxAppVersion()), pluginJsonBytes.length, tableOffset, pluginId);
 
-        ResourceConfig resourceConfig = null;
-        HttpConfig httpConfig = null;
-        MainParser mainParser = null;
+        PVVAHeader header = new PVVAHeader((byte) 1, (byte) 0, buildXml.isCreateSignature(), BuildXml.generateBuildId(), pluginIdLength, BuildXml.versionToInt(buildXml.getMinAppVersion()), BuildXml.versionToInt(buildXml.getMaxAppVersion()), tableOffset, pluginId);
+        WritablePVVAHost host = new WritablePVVAHost(Objects.requireNonNull(header), BuildHandlerHelper.findProjectChunks(buildXml.getCompressLevel()));
 
-        for (PvvaPaths.Paths path : PvvaPaths.paths()) {
-            switch (path) {
-                case PvvaPaths.Paths.HTTP_CONFIG:
-                    if (Files.exists(PvvaPaths.HTTP_CONFIG)) {
-                        httpConfig = HttpConfigTransformer.ofJson(PvvaPaths.allString(PvvaPaths.HTTP_CONFIG));
-                    }
-                    break;
-                case PvvaPaths.Paths.RESOURCE_CONFIG:
-                    resourceConfig = ResourceConfigTransformer.ofJson(PvvaPaths.allString(PvvaPaths.RESOURCE_CONFIG));
-                    break;
-                case PvvaPaths.Paths.MAIN_PARSER:
-                    mainParser = ParserTransformer.ofParser(PvvaPaths.allString(PvvaPaths.MAIN_PARSER));
-                    break;
-            }
-        }
-
-        PVVAHost host = new PVVAHost(Objects.requireNonNull(header), new EntriesOffsetTable((short) 0, (byte) 0, Map.of()), Objects.requireNonNull(pluginJson), Objects.requireNonNull(resourceConfig), Objects.requireNonNull(httpConfig), Objects.requireNonNull(mainParser), Map.of(), null);
-        if (Files.notExists(PvvaPaths.BUILDS_OUT)) {
-            try {
-                Files.createDirectory(PvvaPaths.BUILDS_OUT);
-            } catch (Exception e) {
-                throw new PvvaCliException("Error to prepare file struct", e);
-            }
-        }
-
-        try (PVVAWriter writer = new PVVAWriter(pvvaOut, buildXml.getCompressLevel())) {
+        prepareBuildsOut();
+        try (PVVAWriter writer = new DefaultPVVAWriter(pvvaOut)) {
             writer.writeVideoAdapter(host);
             if (buildXml.isCreateSignature()) {
-                writer.appendSignature(Signer.getSignature(writer.getWritedData().array()));
+                writer.appendSignature(Signer.getSignature(writer.getWrittenData().array()));
             }
             isSuccessful = true;
         } catch (Exception e) {
@@ -132,6 +92,16 @@ public class BuildHandler extends CommandHandler {
                 }
             }
         });
+    }
+
+    private void prepareBuildsOut() {
+        if (Files.notExists(PvvaPaths.BUILDS_OUT)) {
+            try {
+                Files.createDirectory(PvvaPaths.BUILDS_OUT);
+            } catch (Exception e) {
+                throw new PvvaCliException("Error to prepare file struct", e);
+            }
+        }
     }
 
     @Command("install")
