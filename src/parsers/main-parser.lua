@@ -137,9 +137,7 @@ end
 function parseVideoPage(htmlstr)
     local doc = html.parseHtml(htmlstr)
     local video = {
-        comments = {},
         qualityMap = {},
-        timecodes = {},
         tagLinks = {},
         modelsLinks = {},
         categories = {}
@@ -205,13 +203,13 @@ function parseVideoPage(htmlstr)
 
     local modelsDiv = doc.selectFirst("div.video-models")
     if modelsDiv then
-        local modelLinks = modelsDiv.select("a[href]")
-        for i = 1, #modelLinks do
-            local model = modelLinks[i]
+        local modelsLinks = modelsDiv.select("a[href]")
+        for i = 1, #modelsLinks do
+            local model = modelsLinks[i]
             local modelName = model.text()
             local modelUrl = model.attr("abs:href")
             if modelName ~= "" then
-                video.modelLinks[modelName] = modelUrl
+                video.modelsLinks[modelName] = modelUrl
             end
         end
     end
@@ -221,7 +219,7 @@ function parseVideoPage(htmlstr)
         local tagLinks = tagsDiv.select("a[href]")
         for i = 1, #tagLinks do
             local tag = tagLinks[i]
-            local tagName = tag.text()
+            local tagName = tag.text():gsub("^#", "")
             local tagUrl = tag.attr("abs:href")
             if tagName ~= "" then
                 video.tagLinks[tagName] = tagUrl
@@ -230,44 +228,56 @@ function parseVideoPage(htmlstr)
     end
 
     local timecodeDiv = doc.selectFirst("div.video-tags[data-nosnippet=true]")
+    print("Timecodes exists: " .. tostring(timecodeDiv ~= nil))
     if timecodeDiv then
+        print("=== TIMECODES HTML ===")
+        print(timecodeDiv.outerHtml())
+        print("=== TEXT ===")
+        print("'" .. timecodeDiv.text() .. "'")
+        print("======================")
         local text = timecodeDiv.text()
-        local pattern = "([^:]+)%s*%-%s*(%d+:%d+)"
-        local pos = 1
-        while true do
-            local desc, timeStr = string.match(text, pattern, pos)
-            if not desc then break end
-                local parts = {}
-                for part in string.gmatch(timeStr, "(%d+)") do
-                    table.insert(parts, part)
-                end
-                local seconds = 0
-                if #parts == 2 then
-                    seconds = tonumber(parts[1]) * 60 + tonumber(parts[2])
-                elseif #parts == 1 then
-                    seconds = tonumber(parts[1])
-                end
-                if desc and seconds > 0 then
-                    table.insert(video.timecodes, {
+        local hasTimecodes = false
+        local timecodes = {}
+        for timeStr, desc in string.gmatch(text, "(%d+:%d+)%s*%-%s*([^,]+)") do
+            hasTimecodes = true
+            local parts = {}
+            for part in string.gmatch(timeStr, "(%d+)") do
+                table.insert(parts, part)
+            end
+
+            local seconds = 0
+            if #parts == 2 then
+                seconds = tonumber(parts[1]) * 60 + tonumber(parts[2])
+            elseif #parts == 3 then
+                seconds = tonumber(parts[1]) * 3600 + tonumber(parts[2]) * 60 + tonumber(parts[3])
+            end
+
+            if seconds > 0 and desc ~= "" then
+                table.insert(timecodes, {
                     time = string.format("PT%sS", seconds),
-                    text = string.gsub(desc, "^[%s;]+", "") .. " - " .. timeStr
+                    text = desc:gsub("^%s+", ""):gsub("%s+$", "")
                 })
             end
-            pos = string.find(text, timeStr, pos) + #timeStr
+        end
+        if hasTimecodes then
+            video.timecodes = timecodes
         end
     end
 
     local qualityDiv = doc.selectFirst("div.quality_chooser")
     if qualityDiv then
-        local qualityLinks = qualityDiv.select("a.choose")
+        local qualityLinks = qualityDiv.select("a[href]")
         for i = 1, #qualityLinks do
             local q = qualityLinks[i]
             local qName = q.text()
+            qName = qName:gsub("^%s+", ""):gsub("%s+$", "")
             local qUrl = q.attr("href")
+
             if qName ~= "" and qUrl ~= "" then
                 video.qualityMap[qName] = qUrl
             end
         end
     end
+
     return json.toJson(video)
 end
