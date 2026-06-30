@@ -75,7 +75,6 @@ public class ExtractEntryHandler extends CommandHandler {
 
         Path pvva = Path.of(info.getFlag("-i"));
         try (PVVAReader reader = new DefaultPVVAReader(pvva)) {
-            out.println(info);
             if (info.hasFlag("v")) {
                 PVVAHost host = reader.readVideoAdapter();
                 host.chunkMap().values().forEach(this::printChunkHeader);

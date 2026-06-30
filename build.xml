@@ -7,6 +7,11 @@
     </properties>
 
     <build>
+        <files>
+            <excludes>
+                <file>.DS_Store</file>
+            </excludes>
+        </files>
         <compress-level>9</compress-level>
         <final-name>Porn365</final-name>
         <create-info>true</create-info>

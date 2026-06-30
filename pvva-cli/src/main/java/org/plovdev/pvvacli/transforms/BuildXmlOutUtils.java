@@ -2,7 +2,7 @@ package org.plovdev.pvvacli.transforms;
 
 import org.jspecify.annotations.NonNull;
 import org.plovdev.pvva.models.PVVAHeader;
-import org.plovdev.pvvacli.models.BuildXml;
+import org.plovdev.pvvacli.utils.PluginsVersionUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -49,11 +49,11 @@ public class BuildXmlOutUtils {
         properties.appendChild(createSign);
 
         Element minAppVersion = document.createElement("min-app-version");
-        minAppVersion.setTextContent(BuildXml.intToVersion(header.getMinAppVersion()));
+        minAppVersion.setTextContent(PluginsVersionUtils.intToVersion(header.getMinAppVersion()));
         properties.appendChild(minAppVersion);
 
         Element maxAppVersion = document.createElement("max-app-version");
-        maxAppVersion.setTextContent(BuildXml.intToVersion(header.getMaxAppVersion()));
+        maxAppVersion.setTextContent(PluginsVersionUtils.intToVersion(header.getMaxAppVersion()));
         properties.appendChild(maxAppVersion);
         return properties;
     }

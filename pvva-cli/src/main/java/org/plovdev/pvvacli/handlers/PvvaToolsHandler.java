@@ -12,8 +12,8 @@ import org.plovdev.pvva.read.DefaultPVVAReader;
 import org.plovdev.pvva.read.PVVAReader;
 import org.plovdev.pvvacli.PvvaPaths;
 import org.plovdev.pvvacli.mock.MockDataCreator;
-import org.plovdev.pvvacli.models.BuildXml;
 import org.plovdev.pvvacli.transforms.BuildXmlOutUtils;
+import org.plovdev.pvvacli.utils.PluginsVersionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +42,8 @@ public class PvvaToolsHandler extends CommandHandler {
                 appendString(builder, "Adapter Flag", header.getFlag());
                 appendString(builder, "Has Signature", header.isHasSign());
                 appendString(builder, "Build ID", header.getBuildId());
-                appendString(builder, "Min App Version", BuildXml.intToVersion(header.getMinAppVersion()));
-                appendString(builder, "Max App Version", BuildXml.intToVersion(header.getMaxAppVersion()));
+                appendString(builder, "Min App Version", PluginsVersionUtils.intToVersion(header.getMinAppVersion()));
+                appendString(builder, "Max App Version", PluginsVersionUtils.intToVersion(header.getMaxAppVersion()));
 
                 PluginJson pluginJson = host.pluginJson();
                 builder.append("\n");
@@ -101,7 +101,7 @@ public class PvvaToolsHandler extends CommandHandler {
             Files.writeString(outputDir.resolve(PvvaPaths.HTTP_CONFIG), MockDataCreator.mockHttpConfig());
             Files.writeString(outputDir.resolve(PvvaPaths.MAIN_PARSER), MockDataCreator.mockMainParser());
 
-            PVVAHeader mockHeader = new PVVAHeader((byte) 1, (byte) 0, true, BuildXml.generateBuildId(), (byte) 0, 20000, 30000, 0, "");
+            PVVAHeader mockHeader = new PVVAHeader((byte) 1, (byte) 0, true, PluginsVersionUtils.generateBuildId(), (byte) 0, 20000, 30000, 0, "");
             BuildXmlOutUtils.restoreBuildXml(mockHeader, outputDir.resolve(PvvaPaths.BUILD_XML));
 
             System.out.println("Pvva project generated.");

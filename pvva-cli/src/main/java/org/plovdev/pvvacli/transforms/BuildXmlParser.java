@@ -11,10 +11,17 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BuildXmlParser {
     private static final Logger log = LoggerFactory.getLogger(BuildXmlParser.class);
+    private static final XPath xPath = XPathFactory.newInstance().newXPath();
 
     public static @NonNull BuildXml parse(@NonNull Path xmlPath) {
         try {
@@ -34,6 +41,7 @@ public class BuildXmlParser {
             buildXml.setFinalName(getElementText(doc, "final-name"));
             buildXml.setCreateInfo(Boolean.parseBoolean(getElementText(doc, "create-info")));
             buildXml.setUrl(getElementText(doc, "url"));
+            buildXml.putExcludes(parsePathsList(doc, "excludes"));
             return buildXml;
         } catch (Exception e) {
             throw new PvvaCliException(e);
@@ -46,5 +54,24 @@ public class BuildXmlParser {
             return nodes.item(0).getTextContent();
         }
         return null;
+    }
+
+    private static @NonNull List<Path> parsePathsList(Document doc, String part) {
+        try {
+            List<Path> files = new ArrayList<>();
+            XPath xPath = XPathFactory.newInstance().newXPath();
+
+            String expression = "/plugin/build/files/" + part + "/file";
+            NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(doc, XPathConstants.NODESET);
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                files.add(Path.of(nodeList.item(i).getTextContent().trim()));
+            }
+
+            return files;
+        } catch (XPathExpressionException e) {
+            log.error("XPath expression error: ", e);
+            throw new IllegalArgumentException(e);
+        }
     }
 }

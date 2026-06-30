@@ -1,6 +1,8 @@
 package org.plovdev.pvvacli.models;
 
-import org.jspecify.annotations.NonNull;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BuildXml {
     private String pluginId;
@@ -11,6 +13,7 @@ public class BuildXml {
     private boolean createInfo;
     private String url;
     private int compressLevel = 9;
+    private final List<Path> excludes = new ArrayList<>();
 
     public String getPluginId() {
         return pluginId;
@@ -76,25 +79,12 @@ public class BuildXml {
         this.compressLevel = compressLevel;
     }
 
-    public static int versionToInt(@NonNull String version) {
-        String[] parts = version.split("\\.");
-        int major = Integer.parseInt(parts[0]);
-        int minor = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
-        int patch = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
-
-        return major * 10000 + minor * 100 + patch;
+    public List<Path> getExcludes() {
+        return List.copyOf(excludes);
     }
 
-    public static @NonNull String intToVersion(int versionCode) {
-        int major = versionCode / 10000;
-        int minor = (versionCode % 10000) / 100;
-        int patch = versionCode % 100;
-
-        return String.format("%d.%d.%d", major, minor, patch);
-    }
-
-    public static int generateBuildId() {
-        return (int) (System.currentTimeMillis() / 1000);
+    public void putExcludes(List<Path> excs) {
+        excludes.addAll(excs);
     }
 
     @Override
