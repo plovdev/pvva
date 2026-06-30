@@ -302,6 +302,11 @@ public class DefaultPVVAReader implements PVVAReader {
     }
 
     @Override
+    public ByteBuffer getReadData() throws IOException {
+        return PVVAReaderHelper.getChannelData(pvvaReader);
+    }
+
+    @Override
     public synchronized void close() throws IOException {
         log.debug("Closing read channel.");
 

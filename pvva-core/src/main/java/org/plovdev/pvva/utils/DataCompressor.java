@@ -31,7 +31,7 @@ public final class DataCompressor {
             inflater.setInput(src);
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            byte[] buffer = new byte[512];
+            byte[] buffer = new byte[1024];
             while (!inflater.finished()) {
                 int compressedSize = inflater.inflate(buffer);
                 outputStream.write(buffer, 0, compressedSize);

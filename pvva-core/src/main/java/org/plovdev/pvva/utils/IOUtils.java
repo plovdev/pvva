@@ -3,8 +3,11 @@ package org.plovdev.pvva.utils;
 import org.jspecify.annotations.NonNull;
 
 import java.nio.ByteBuffer;
+import java.util.HexFormat;
 
 public class IOUtils {
+    private static final HexFormat HEX_FORMAT = HexFormat.of();
+
     /**
      * Преобразует short в массив из 2 байт (Big-Endian).
      */
@@ -63,5 +66,13 @@ public class IOUtils {
      */
     public static long bytesToLong(byte[] bytes) {
         return ByteBuffer.allocate(8).put(bytes).getLong();
+    }
+
+    public static byte[] parseHex(String hexStr) {
+        return HEX_FORMAT.parseHex(hexStr);
+    }
+
+    public static String formatHex(byte[] hex) {
+        return HEX_FORMAT.formatHex(hex);
     }
 }

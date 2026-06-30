@@ -110,4 +110,13 @@ public final class PVVAReaderHelper {
 
         return new Chunk(ChunkType.ofString(chunkTypeStr), chunkSize, chunkIdLength, chunkId, chunkContent);
     }
+
+    public static @NonNull ByteBuffer getChannelData(@NonNull FileChannel channel) throws IOException {
+        long position = channel.position();
+        channel.position(0);
+        ByteBuffer buffer = ByteBuffer.allocate((int) position);
+        channel.read(buffer);
+        channel.position(position);
+        return buffer.flip();
+    }
 }

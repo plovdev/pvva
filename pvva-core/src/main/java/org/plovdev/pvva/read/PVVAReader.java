@@ -6,6 +6,7 @@ import org.plovdev.pvva.models.chunks.Chunk;
 import org.plovdev.pvva.models.table.EntriesOffsetTable;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Set;
 
 public interface PVVAReader extends AutoCloseable {
@@ -30,6 +31,8 @@ public interface PVVAReader extends AutoCloseable {
     byte supportedVersion();
 
     byte supportedFlag();
+
+    ByteBuffer getReadData() throws IOException;
 
     @Override
     void close() throws IOException;

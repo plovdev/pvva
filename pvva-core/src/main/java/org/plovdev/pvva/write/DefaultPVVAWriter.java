@@ -5,6 +5,7 @@ import org.jspecify.annotations.NonNull;
 import org.plovdev.pvva.models.PVVAHeader;
 import org.plovdev.pvva.models.WritablePVVAHost;
 import org.plovdev.pvva.models.chunks.Chunk;
+import org.plovdev.pvva.read.PVVAReaderHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,12 +69,7 @@ public class DefaultPVVAWriter implements PVVAWriter {
 
     @Override
     public synchronized ByteBuffer getWrittenData() throws IOException {
-        long position = pvvaWriter.position();
-        pvvaWriter.position(0);
-        ByteBuffer buffer = ByteBuffer.allocate((int) position);
-        pvvaWriter.read(buffer);
-        pvvaWriter.position(position);
-        return buffer.flip();
+        return PVVAReaderHelper.getChannelData(pvvaWriter);
     }
 
     @Override
