@@ -14,9 +14,5 @@
         </files>
         <compress-level>9</compress-level>
         <final-name>Porn365</final-name>
-        <create-info>true</create-info>
-        <url>
-            https://api.pornviewer.foundation/plugins/porn365
-        </url>
     </build>
 </plugin>

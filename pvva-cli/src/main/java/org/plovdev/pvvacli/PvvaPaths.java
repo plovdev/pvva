@@ -85,9 +85,9 @@ public final class PvvaPaths {
     public static void preparePaths(Path output) throws IOException {
         Files.createDirectories(output);
 
-        Files.createDirectory(SRC_PATH);
-        Files.createDirectory(CONFIGS);
-        Files.createDirectories(PARSERS);
-        Files.createDirectories(RESOURCES);
+        Files.createDirectories(output.resolve(SRC_PATH));
+        Files.createDirectories(output.resolve(CONFIGS));
+        Files.createDirectories(output.resolve(PARSERS));
+        Files.createDirectories(output.resolve(RESOURCES));
     }
 }
