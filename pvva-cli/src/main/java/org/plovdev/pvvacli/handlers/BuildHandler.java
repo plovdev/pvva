@@ -49,7 +49,7 @@ public class BuildHandler extends CommandHandler {
         int tableOffset = PVVAHeader.ABS_HEADER_SIZE + pluginIdLength;
 
         PVVAHeader header = new PVVAHeader((byte) 1, (byte) 0, buildXml.isCreateSignature(), PluginsVersionUtils.generateBuildId(), pluginIdLength, PluginsVersionUtils.versionToInt(buildXml.getMinAppVersion()), PluginsVersionUtils.versionToInt(buildXml.getMaxAppVersion()), tableOffset, pluginId);
-        WritablePVVAHost host = new WritablePVVAHost(Objects.requireNonNull(header), BuildHandlerHelper.findProjectChunks(buildXml.getCompressLevel()));
+        WritablePVVAHost host = new WritablePVVAHost(Objects.requireNonNull(header), BuildHandlerHelper.findProjectChunks(buildXml));
 
         prepareBuildsOut();
         try (PVVAWriter writer = new DefaultPVVAWriter(pvvaOut)) {
