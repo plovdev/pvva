@@ -9,7 +9,7 @@
     <build>
         <files>
             <excludes>
-                <file>.DS_Store</file>
+                <file>src/.DS_Store</file>
             </excludes>
         </files>
         <compress-level>9</compress-level>
