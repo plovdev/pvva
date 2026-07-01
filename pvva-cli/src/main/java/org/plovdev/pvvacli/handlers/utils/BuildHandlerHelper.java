@@ -13,7 +13,6 @@ import org.plovdev.pvvacli.utils.ChunkTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -60,7 +59,7 @@ public final class BuildHandlerHelper {
     private static @NonNull Chunk prepareChunk(@NonNull Path path, int compressLevel) {
         try {
             String chunkId = path.getFileName().toString();
-            byte chunkIdLength = (byte) chunkId.getBytes(StandardCharsets.US_ASCII).length;
+            byte chunkIdLength = (byte) chunkId.length();
 
             Path relativePath = PvvaPaths.PROJECT_HOME.relativize(path);
             ChunkType chunkType = ChunkTypeUtils.determineChunkType(relativePath);

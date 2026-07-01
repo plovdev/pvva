@@ -1,0 +1,7 @@
+//Test main
+$test Main test;
+parseVideos {
+    video.id = '\\d+';
+    $dbg;
+    video.url = 'http://4porno365.run/movie/\\d+';
+}

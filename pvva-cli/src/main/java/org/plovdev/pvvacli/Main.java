@@ -17,6 +17,12 @@ public class Main {
         commander.registerCommandHandler(new ExtractEntryHandler());
         commander.registerCommandHandler(new KeysHandler());
         commander.registerCommandHandler(new UnpackHandler());
-        commander.notifyCommandListeners(CommandParser.parse(args));
+
+        try {
+            commander.notifyCommandListeners(CommandParser.parse(args));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println("Enter 'pvva help'");
+        }
     }
 }
