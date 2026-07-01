@@ -15,7 +15,7 @@ import org.plovdev.pvvacli.models.BuildXml;
 import org.plovdev.pvvacli.security.Signer;
 import org.plovdev.pvvacli.transforms.BuildXmlParser;
 import org.plovdev.pvvacli.utils.InfoCreator;
-import org.plovdev.pvvacli.utils.PluginsVersionUtils;
+import org.plovdev.pvvacli.utils.VersionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class BuildHandler extends CommandHandler {
         byte pluginIdLength = (byte) pluginId.length();
         int tableOffset = PVVAHeader.ABS_HEADER_SIZE + pluginIdLength;
 
-        PVVAHeader header = new PVVAHeader((byte) 1, (byte) 0, buildXml.isCreateSignature(), PluginsVersionUtils.generateBuildId(), pluginIdLength, PluginsVersionUtils.versionToInt(buildXml.getMinAppVersion()), PluginsVersionUtils.versionToInt(buildXml.getMaxAppVersion()), tableOffset, pluginId);
+        PVVAHeader header = new PVVAHeader((byte) 1, (byte) 0, buildXml.isCreateSignature(), VersionUtils.generateBuildId(), pluginIdLength, VersionUtils.versionToInt(buildXml.getMinAppVersion()), VersionUtils.versionToInt(buildXml.getMaxAppVersion()), tableOffset, pluginId);
         WritablePVVAHost host = new WritablePVVAHost(Objects.requireNonNull(header), BuildHandlerHelper.findProjectChunks(buildXml));
 
         prepareBuildsOut();

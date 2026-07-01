@@ -2,8 +2,8 @@ package org.plovdev.pvvacli.utils;
 
 import org.jspecify.annotations.NonNull;
 
-public final class PluginsVersionUtils {
-    private PluginsVersionUtils() {
+public final class VersionUtils {
+    private VersionUtils() {
     }
 
     public static int versionToInt(@NonNull String version) {

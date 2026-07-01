@@ -213,16 +213,7 @@ public class DefaultPVVAReader implements PVVAReader {
 
     @Override
     public boolean hasChunk(String chunkId) {
-        try {
-            EntriesOffsetTable table = readedOffsetTable.get();
-            if (table == null) {
-                table = parseOffsetTable();
-            }
-            return table.entries().containsKey(chunkId);
-        } catch (IOException e) {
-            log.error("Error check has chunk: ", e);
-            return false;
-        }
+        return getAvailableChunkIds().contains(chunkId);
     }
 
     @Override
