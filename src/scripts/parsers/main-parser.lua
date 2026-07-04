@@ -55,9 +55,10 @@ function parseVideos(htmlstr)
             duration = duration,
             views = views,
             rating = {
-            rating = ratingValue,
-            ratingType = "PERCENTAGE"
-        }})
+                rating = ratingValue,
+                ratingType = "PERCENTAGE"
+            }
+        })
 
         ::continue::
     end
@@ -228,13 +229,7 @@ function parseVideoPage(htmlstr)
     end
 
     local timecodeDiv = doc.selectFirst("div.video-tags[data-nosnippet=true]")
-    print("Timecodes exists: " .. tostring(timecodeDiv ~= nil))
     if timecodeDiv then
-        print("=== TIMECODES HTML ===")
-        print(timecodeDiv.outerHtml())
-        print("=== TEXT ===")
-        print("'" .. timecodeDiv.text() .. "'")
-        print("======================")
         local text = timecodeDiv.text()
         local hasTimecodes = false
         local timecodes = {}

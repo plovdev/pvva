@@ -16,7 +16,7 @@ public class UtilCommandsHandler extends CommandHandler {
         commands.append("pvva version - print the pvva-cli version.\n");
         commands.append("pvva help - print the list of available commands.\n");
         commands.append("\n");
-        commands.append("pvva init - Initiliaze the pvva project. Use -o={output dir} to create project in another place.\n");
+        commands.append("pvva init - Initiliaze the pvva project in current dir. Use -o={output dir} to create project in another place.\n");
         commands.append("pvva build [install] - Build the project to .pvva. User -re to replae existing builded adapter. install - install builded adapter in app.\n");
         commands.append("pvva install -i={input .pvva} - Install input adapter in app. User -re to replace already installed adapter.\n");
         commands.append("\n");
@@ -25,7 +25,7 @@ public class UtilCommandsHandler extends CommandHandler {
         commands.append("pvva entries -i={inout .pvva} - print all entries in specified adapter. Use -v for more informative printing.\n");
         commands.append("pvva unpack -i={input .pvva} - unpacks pvva to current or specified dir(use -o={output/dir}.\n");
         commands.append("\n");
-        commands.append("pvva test - Tests adapter by regex templates(exp).");
+        commands.append("pvva test - Tests adapter by regex templates(expiremental).");
         commands.append("\n");
         commands.append("pvva keys --init - initiate key pair and print public key. User -re for reinitiate.\n");
         commands.append("pvva keys --public - print public key.\n");

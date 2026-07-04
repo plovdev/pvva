@@ -10,6 +10,11 @@
         <files>
             <excludes>
                 <file>src/.DS_Store</file>
+                <file>src/resources/categories.html</file>
+                <file>src/resources/models.html</file>
+                <file>src/resources/videos.html</file>
+                <file>src/resources/video.html</file>
+                <file>src/scripts/parsers/parser.lua</file>
             </excludes>
         </files>
         <compress-level>9</compress-level>

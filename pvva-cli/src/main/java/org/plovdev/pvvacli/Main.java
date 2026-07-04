@@ -17,6 +17,7 @@ public class Main {
         commander.registerCommandHandler(new ExtractEntryHandler());
         commander.registerCommandHandler(new KeysHandler());
         commander.registerCommandHandler(new UnpackHandler());
+        commander.registerCommandHandler(new TestHandler());
 
         try {
             commander.notifyCommandListeners(CommandParser.parse(args));

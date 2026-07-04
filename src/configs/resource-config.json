@@ -13,7 +13,7 @@
     "endpoint": "/models/${page}",
     "model": {
       "supports": true,
-      "endpoint": "/models/${model-name}"
+      "endpoint": "/models/${model-name}/${page}"
     },
     "model-search": {
       "supports": true,
