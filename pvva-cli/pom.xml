@@ -87,7 +87,7 @@
                             </filters>
                             <createSourcesJar>false</createSourcesJar>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <finalName>pvva-cli</finalName>
+                            <finalName>../../pvva-builds/pvva-cli-${project.version}</finalName>
                         </configuration>
                     </execution>
                 </executions>

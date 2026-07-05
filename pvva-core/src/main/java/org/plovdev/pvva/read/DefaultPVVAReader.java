@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class DefaultPVVAReader implements PVVAReader {
     private static final Logger log = LoggerFactory.getLogger(DefaultPVVAReader.class);
-    private static final byte SUPPORTED_VERSION = 1;
+    private static final byte SUPPORTED_VERSION = 2;
     private static final byte SUPPORTED_FLAG = 0;
 
     private final FileChannel pvvaReader;
@@ -98,9 +98,13 @@ public class DefaultPVVAReader implements PVVAReader {
         if (checkMagic()) {
             pvvaReader.position(4);
             PVVAHeader header = PVVAReaderHelper.fillHeaderFromBuffer(pvvaReader);
-            if (header.getVersion() != SUPPORTED_VERSION || header.getFlag() != SUPPORTED_FLAG) {
-                throw new IllegalArgumentException("This video adapter not supported by this reader.");
+            if (header.getVersion() != SUPPORTED_VERSION) {
+                throw new IllegalArgumentException("Plugin version is not supported by this reader. Plugin version: " + header.getVersion() + " reader version: " + supportedVersion());
             }
+            if (header.getFlag() != SUPPORTED_FLAG) {
+                throw new IllegalArgumentException("Plugin flag is not supported by this reader. Plugin flag: " + header.getFlag() + " reader flag: " + supportedFlag());
+            }
+
             readedHeader.set(header);
             return header;
         } else {
@@ -238,7 +242,7 @@ public class DefaultPVVAReader implements PVVAReader {
     }
 
     @Override
-    public Set<String> getAvailableChunkIds() {
+    public synchronized Set<String> getAvailableChunkIds() {
         try {
             EntriesOffsetTable table = readedOffsetTable.get();
             if (table == null) {
@@ -293,7 +297,7 @@ public class DefaultPVVAReader implements PVVAReader {
     }
 
     @Override
-    public ByteBuffer getReadData() throws IOException {
+    public synchronized ByteBuffer getReadData() throws IOException {
         return PVVAReaderHelper.getChannelData(pvvaReader);
     }
 

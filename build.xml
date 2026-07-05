@@ -10,14 +10,9 @@
         <files>
             <excludes>
                 <file>src/.DS_Store</file>
-                <file>src/resources/categories.html</file>
-                <file>src/resources/models.html</file>
-                <file>src/resources/videos.html</file>
-                <file>src/resources/video.html</file>
-                <file>src/scripts/parsers/parser.lua</file>
             </excludes>
         </files>
         <compress-level>9</compress-level>
-        <final-name>Porn365</final-name>
+        <final-name>Porn365_2</final-name>
     </build>
 </plugin>
