@@ -16,6 +16,8 @@ target/
 
 src/resources/*.html
 
+pvva-builds/
+
 ### Eclipse ###
 .apt_generated
 .classpath
