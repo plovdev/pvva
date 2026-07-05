@@ -19,6 +19,7 @@
         <commaidle.version>1.3.1</commaidle.version>
         <keyer.version>1.7.1-beta</keyer.version>
         <logback.version>1.5.32</logback.version>
+        <pv.version>2.0</pv.version>
     </properties>
 
     <dependencies>
@@ -36,12 +37,7 @@
         <dependency>
             <groupId>com.plovdev.pornviewer</groupId>
             <artifactId>http</artifactId>
-            <version>2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.plovdev</groupId>
-            <artifactId>eda</artifactId>
-            <version>1.1</version>
+            <version>${pv.version}</version>
         </dependency>
 
         <dependency>
@@ -70,16 +66,27 @@
                         </goals>
                         <configuration>
                             <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>org.plovdev.pvvacli.Main</mainClass>
                                 </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/*.EC</exclude>
+                                        <exclude>META-INF/versions/9/*.SF</exclude>
+                                        <exclude>META-INF/versions/9/*.RSA</exclude>
+                                        <exclude>META-INF/versions/9/*.DSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                             <createSourcesJar>false</createSourcesJar>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <minimizeJar>false</minimizeJar>
                             <finalName>pvva-cli</finalName>
                         </configuration>
                     </execution>

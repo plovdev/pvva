@@ -14,7 +14,7 @@ target/
 **/dependency-reduced-pom.xml
 **/.flattened-pom.xml
 
-/src/resources/*.html
+src/resources/*.html
 
 ### Eclipse ###
 .apt_generated
