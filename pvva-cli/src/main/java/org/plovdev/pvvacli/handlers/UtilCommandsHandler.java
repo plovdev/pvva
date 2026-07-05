@@ -28,7 +28,7 @@ public class UtilCommandsHandler extends CommandHandler {
         commands.append("pvva test - Tests adapter by regex templates(expiremental).");
         commands.append("\n");
         commands.append("pvva keys --init - initiate key pair and print public key. User -re for reinitiate.\n");
-        commands.append("pvva keys --public - print public key.\n");
+        commands.append("pvva keys --public - print public key.");
 
         System.out.println(commands);
     }

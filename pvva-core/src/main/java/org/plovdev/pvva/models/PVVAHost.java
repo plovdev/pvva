@@ -26,7 +26,7 @@ public record PVVAHost(@NonNull PVVAHeader header,
                        byte @Nullable [] signature) {
 
     public String getSystemPluginId() {
-        String rawSystemId = header.getPluginId() + '\0' + pluginJson.developerId();
+        String rawSystemId = header.getPluginId() + '\0' + pluginJson.developerId() + '\0' + header.getBuildId();
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             return IOUtils.formatHex(digest.digest(rawSystemId.getBytes(StandardCharsets.US_ASCII)));

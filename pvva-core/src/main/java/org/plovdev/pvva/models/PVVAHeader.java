@@ -5,12 +5,11 @@ import java.nio.charset.StandardCharsets;
 public final class PVVAHeader {
     public static final String MAGIC_NUMBER = "PVVA";
     public static final byte[] MAGIC_NUMBER_BYTES = MAGIC_NUMBER.getBytes(StandardCharsets.US_ASCII);
-    public static final int HEADER_SIZE = 20;
+    public static final int HEADER_SIZE = 19;
     public static final int ABS_HEADER_SIZE = MAGIC_NUMBER.length() + HEADER_SIZE;
 
     private byte version;
     private byte flag;
-    private boolean hasSign;
     private int buildId;
     private byte idlength;
     private int minAppVersion;
@@ -18,10 +17,9 @@ public final class PVVAHeader {
     public int tableOffset;
     private String pluginId;
 
-    public PVVAHeader(byte version, byte flag, boolean hasSign, int buildId, byte idlength, int minAppVersion, int maxAppVersion, int tableOffset, String pluginId) {
+    public PVVAHeader(byte version, byte flag, int buildId, byte idlength, int minAppVersion, int maxAppVersion, int tableOffset, String pluginId) {
         this.version = version;
         this.flag = flag;
-        this.hasSign = hasSign;
         this.buildId = buildId;
         this.idlength = idlength;
         this.minAppVersion = minAppVersion;
@@ -47,14 +45,6 @@ public final class PVVAHeader {
 
     public void setFlag(byte flag) {
         this.flag = flag;
-    }
-
-    public boolean isHasSign() {
-        return hasSign;
-    }
-
-    public void setHasSign(boolean hasSign) {
-        this.hasSign = hasSign;
     }
 
     public int getBuildId() {
@@ -110,7 +100,6 @@ public final class PVVAHeader {
         return "PVVAHeader{" +
                 "version=" + version +
                 ", flag=" + flag +
-                ", hasSign=" + hasSign +
                 ", buildId=" + buildId +
                 ", idlength=" + idlength +
                 ", minAppVersion=" + minAppVersion +

@@ -40,7 +40,6 @@ public class PvvaToolsHandler extends CommandHandler {
 
                 appendString(builder, "File Version", header.getVersion());
                 appendString(builder, "Adapter Flag", header.getFlag());
-                appendString(builder, "Has Signature", header.isHasSign());
                 appendString(builder, "Build ID", header.getBuildId());
                 appendString(builder, "Min App Version", VersionUtils.intToVersion(header.getMinAppVersion()));
                 appendString(builder, "Max App Version", VersionUtils.intToVersion(header.getMaxAppVersion()));
@@ -73,7 +72,7 @@ public class PvvaToolsHandler extends CommandHandler {
                     appendString(builder, "    Support Category", res.supportCategory());
                 });
 
-                if (header.isHasSign() && host.signature() != null) {
+                if (host.signature() != null) {
                     builder.append("\n");
                     appendString(builder, "Signature", Arrays.toString(host.signature()));
                 }
@@ -101,7 +100,7 @@ public class PvvaToolsHandler extends CommandHandler {
             Files.writeString(outputDir.resolve(PvvaPaths.HTTP_CONFIG), MockDataCreator.mockHttpConfig());
             Files.writeString(outputDir.resolve(PvvaPaths.MAIN_PARSER), MockDataCreator.mockMainParser());
 
-            PVVAHeader mockHeader = new PVVAHeader((byte) 1, (byte) 0, true, VersionUtils.generateBuildId(), (byte) 0, 20000, 30000, 0, "");
+            PVVAHeader mockHeader = new PVVAHeader((byte) 2, (byte) 0, VersionUtils.generateBuildId(), (byte) 0, 20000, 30000, 0, "");
             BuildXmlOutUtils.restoreBuildXml(mockHeader, outputDir.resolve(PvvaPaths.BUILD_XML));
 
             System.out.println("Pvva project generated.");

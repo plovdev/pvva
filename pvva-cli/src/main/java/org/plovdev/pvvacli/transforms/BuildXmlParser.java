@@ -34,7 +34,6 @@ public class BuildXmlParser {
 
             buildXml.setMinAppVersion(getElementText(doc, "min-app-version"));
             buildXml.setMaxAppVersion(getElementText(doc, "max-app-version"));
-            buildXml.setCreateSignature(Boolean.parseBoolean(getElementText(doc, "create-sign")));
 
             String cl = getElementText(doc, "compress-level");
             buildXml.setCompressLevel(cl == null || cl.isEmpty() ? 9 : Integer.parseInt(cl.trim()));

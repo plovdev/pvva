@@ -105,7 +105,7 @@ public class ByteArrayPVVAReader implements PVVAReader {
         } else {
             if (checkMagic()) {
                 log.debug("Header not parsed, read table offset from file.");
-                int tableOffsetField = 20;
+                int tableOffsetField = PVVAHeader.HEADER_SIZE;
                 pvvaReader.position(tableOffsetField);
                 byte[] tableOffsetFieldBuffer = new byte[4];
                 pvvaReader.get(tableOffsetFieldBuffer);
@@ -177,7 +177,7 @@ public class ByteArrayPVVAReader implements PVVAReader {
         log.debug("Chunks readed");
 
         byte[] signature = readedSignature.get();
-        if (signature == null && header.isHasSign()) {
+        if (signature == null) {
             signature = readSignature();
         }
         log.debug("Signature parsed");
@@ -230,19 +230,15 @@ public class ByteArrayPVVAReader implements PVVAReader {
             header = parseHeader();
         }
 
-        if (header.isHasSign()) {
-            int signSize = 64;
-            int totalSize = pvvaReader.capacity();
-            int signOffset = totalSize - signSize;
-            pvvaReader.position(signOffset);
+        int signSize = 64;
+        int totalSize = pvvaReader.capacity();
+        int signOffset = totalSize - signSize;
+        pvvaReader.position(signOffset);
 
-            byte[] signature = new byte[64];
-            pvvaReader.get(signature);
-            readedSignature.set(signature);
-            return signature;
-        } else {
-            return null;
-        }
+        byte[] signature = new byte[64];
+        pvvaReader.get(signature);
+        readedSignature.set(signature);
+        return signature;
     }
 
     @Override

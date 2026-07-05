@@ -27,7 +27,7 @@ public class TestHandler extends CommandHandler {
 
     @Command("test")
     void test(CommandInfo info) {
-        PVVAHeader header = new PVVAHeader((byte) 2, (byte) 0, false, 0, (byte) 0, 0, 0, 0, "");
+        PVVAHeader header = new PVVAHeader((byte) 2, (byte) 0, 0, (byte) 0, 0, 0, 0, "");
 
         PluginJson pluginJson = PluginJsonTransformer.ofJson(PvvaPaths.allString(PvvaPaths.PLUGIN_JSON));
         ResourceConfig resourceConfig = ResourceConfigTransformer.ofJson(PvvaPaths.allString(PvvaPaths.RESOURCE_CONFIG));

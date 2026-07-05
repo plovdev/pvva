@@ -16,7 +16,6 @@ public final class PVVAWriterHelper {
         ByteBuffer buffer = ByteBuffer.allocate(PVVAHeader.HEADER_SIZE + header.getIdlength());
         buffer.put(header.getVersion());
         buffer.put(header.getFlag());
-        buffer.put((byte) (header.isHasSign() ? 1 : 0));
         buffer.putInt(header.getBuildId());
 
         buffer.put(header.getIdlength());

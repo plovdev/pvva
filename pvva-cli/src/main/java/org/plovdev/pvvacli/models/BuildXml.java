@@ -8,7 +8,6 @@ public class BuildXml {
     private String pluginId;
     private String minAppVersion;
     private String maxAppVersion;
-    private boolean createSignature;
     private String finalName;
     private boolean createInfo;
     private String url;
@@ -63,14 +62,6 @@ public class BuildXml {
         this.url = url;
     }
 
-    public boolean isCreateSignature() {
-        return createSignature;
-    }
-
-    public void setCreateSignature(boolean createSignature) {
-        this.createSignature = createSignature;
-    }
-
     public int getCompressLevel() {
         return compressLevel;
     }
@@ -93,7 +84,6 @@ public class BuildXml {
                 "pluginId='" + pluginId + '\'' +
                 ", minAppVersion='" + minAppVersion + '\'' +
                 ", maxAppVersion='" + maxAppVersion + '\'' +
-                ", createSignature=" + createSignature +
                 ", finalName='" + finalName + '\'' +
                 ", createInfo=" + createInfo +
                 ", url='" + url + '\'' +

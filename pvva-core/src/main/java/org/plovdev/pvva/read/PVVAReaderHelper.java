@@ -31,7 +31,6 @@ public final class PVVAReaderHelper {
         buffer.flip();
         byte version = buffer.get();
         byte flag = buffer.get();
-        boolean hasSign = buffer.get() != 0;
         int buildId = buffer.getInt();
 
         byte idlength = buffer.get();
@@ -49,7 +48,7 @@ public final class PVVAReaderHelper {
         idBuffer.get(plugId);
         String pluginId = new String(plugId, StandardCharsets.US_ASCII);
 
-        return new PVVAHeader(version, flag, hasSign, buildId, idlength, minAppVersion, maxAppVersion, tableOffset, pluginId);
+        return new PVVAHeader(version, flag, buildId, idlength, minAppVersion, maxAppVersion, tableOffset, pluginId);
     }
 
     public static @NonNull Map<String, TableEntry> readTableEntries(short tableSize, @NonNull FileChannel pvvaReader) throws IOException {

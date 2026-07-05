@@ -125,7 +125,7 @@ public class DefaultPVVAReader implements PVVAReader {
         } else {
             if (checkMagic()) {
                 log.debug("Header not parsed, read table offset from file.");
-                long tableOffsetField = 20;
+                long tableOffsetField = PVVAHeader.HEADER_SIZE;
                 pvvaReader.position(tableOffsetField);
                 ByteBuffer tableOffsetFieldBuffer = ByteBuffer.allocate(4);
                 int read = pvvaReader.read(tableOffsetFieldBuffer);
@@ -205,7 +205,7 @@ public class DefaultPVVAReader implements PVVAReader {
         log.debug("Chunks readed");
 
         byte[] signature = readedSignature.get();
-        if (signature == null && header.isHasSign()) {
+        if (signature == null) {
             signature = readSignature();
         }
         log.debug("Signature parsed");
@@ -267,23 +267,19 @@ public class DefaultPVVAReader implements PVVAReader {
             header = parseHeader();
         }
 
-        if (header.isHasSign()) {
-            int signSize = 64;
-            long totalSize = pvvaReader.size();
-            long signOffset = totalSize - signSize;
-            pvvaReader.position(signOffset);
-            ByteBuffer signBuffer = ByteBuffer.allocate(signSize);
-            int signRead = pvvaReader.read(signBuffer);
-            if (signRead != signSize) {
-                throw new IllegalStateException("Read not 64 bytes in signature");
-            }
-            byte[] signature = new byte[64];
-            signBuffer.flip().get(signature);
-            readedSignature.set(signature);
-            return signature;
-        } else {
-            return null;
+        int signSize = 64;
+        long totalSize = pvvaReader.size();
+        long signOffset = totalSize - signSize;
+        pvvaReader.position(signOffset);
+        ByteBuffer signBuffer = ByteBuffer.allocate(signSize);
+        int signRead = pvvaReader.read(signBuffer);
+        if (signRead != signSize) {
+            throw new IllegalStateException("Read not 64 bytes in signature");
         }
+        byte[] signature = new byte[64];
+        signBuffer.flip().get(signature);
+        readedSignature.set(signature);
+        return signature;
     }
 
     @Override

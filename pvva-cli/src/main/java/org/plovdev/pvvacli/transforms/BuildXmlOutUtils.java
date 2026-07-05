@@ -44,9 +44,6 @@ public class BuildXmlOutUtils {
 
     private static @NonNull Element createProperties(@NonNull Document document, @NonNull PVVAHeader header) {
         Element properties = document.createElement("properties");
-        Element createSign = document.createElement("create-sign");
-        createSign.setTextContent(String.valueOf(header.isHasSign()));
-        properties.appendChild(createSign);
 
         Element minAppVersion = document.createElement("min-app-version");
         minAppVersion.setTextContent(VersionUtils.intToVersion(header.getMinAppVersion()));
