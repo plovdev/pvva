@@ -6,6 +6,7 @@ import org.plovdev.commaidle.commands.CommandInfo;
 import org.plovdev.commaidle.commands.handlers.CommandHandler;
 import org.plovdev.pvva.models.PVVAHeader;
 import org.plovdev.pvva.models.WritablePVVAHost;
+import org.plovdev.pvva.utils.VersionUtils;
 import org.plovdev.pvva.write.DefaultPVVAWriter;
 import org.plovdev.pvva.write.PVVAWriter;
 import org.plovdev.pvvacli.PvvaPaths;
@@ -15,7 +16,6 @@ import org.plovdev.pvvacli.models.BuildXml;
 import org.plovdev.pvvacli.security.Signer;
 import org.plovdev.pvvacli.transforms.BuildXmlParser;
 import org.plovdev.pvvacli.utils.InfoCreator;
-import org.plovdev.pvvacli.utils.VersionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

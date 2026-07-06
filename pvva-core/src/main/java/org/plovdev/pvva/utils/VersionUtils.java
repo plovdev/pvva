@@ -1,9 +1,13 @@
-package org.plovdev.pvvacli.utils;
+package org.plovdev.pvva.utils;
 
 import org.jspecify.annotations.NonNull;
 
 public final class VersionUtils {
     private VersionUtils() {
+    }
+
+    public static boolean isCompatibleWithAppVersion(int minAppVersion, int maxAppVersion, int appVersion) {
+        return (minAppVersion <= appVersion && appVersion >= maxAppVersion);
     }
 
     public static int versionToInt(@NonNull String version) {

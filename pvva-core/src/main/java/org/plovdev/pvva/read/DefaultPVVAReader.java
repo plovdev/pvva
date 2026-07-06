@@ -14,6 +14,7 @@ import org.plovdev.pvva.transforms.HttpConfigTransformer;
 import org.plovdev.pvva.transforms.PluginJsonTransformer;
 import org.plovdev.pvva.transforms.ResourceConfigTransformer;
 import org.plovdev.pvva.transforms.parser.ParserTransformer;
+import org.plovdev.pvva.utils.VersionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +83,7 @@ public class DefaultPVVAReader implements PVVAReader {
 
             int minAppVersion = header.getMinAppVersion();
             int maxAppVersion = header.getMaxAppVersion();
-            return (minAppVersion <= appVersion && appVersion >= maxAppVersion);
+            return VersionUtils.isCompatibleWithAppVersion(minAppVersion, maxAppVersion, appVersion);
         } catch (Exception e) {
             log.error("Error check compatiblee versioins: ", e);
             return false;

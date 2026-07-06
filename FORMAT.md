@@ -37,7 +37,7 @@ BODY:
 
 ## Детальный разбор структуры
 
-### HEADER 24 bytes:
+### HEADER 23 bytes:
 
 Заголовок генерируется из `build.xml` файла, и файлов проекта.
 
@@ -48,7 +48,6 @@ BODY:
 
 File version                                              // 1byte
 File flag                                                 // 1byte
-Contains signature                                        // 1byte
 Build ID                                                  // 4bytes
 
 plugin id length                                          // 1byte
@@ -90,8 +89,6 @@ Plugin signature                                          // 64bytes
 
 1. `0` - Стандартный плагин. Содержит в себе только .json и .parser файлы. Подходит для безопасного публичного
    распространения
-
-`Contains signature` - Содержит ли файл подпись, которой он подписан?
 
 `Build ID` - id сборки плагина. Необходима для проверки версий в автообновлениях.
 Current BuildID < Available BuildID ? load update : not load update.
@@ -148,4 +145,4 @@ Current BuildID < Available BuildID ? load update : not load update.
 `CHUNK-ID` - имя чанка.
 `CHUNK-CONTENT` - сам чанк.
 
-В самом конце плагина возможно поле signature которое является цифровой подписью плагина.
+В самом конце плагина **обязательно**(с версии формата 2) поле signature которое является цифровой подписью плагина.

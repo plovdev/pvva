@@ -10,10 +10,10 @@ import org.plovdev.pvva.models.PluginJson;
 import org.plovdev.pvva.models.configs.resourceconfig.ResourceConfig;
 import org.plovdev.pvva.read.DefaultPVVAReader;
 import org.plovdev.pvva.read.PVVAReader;
+import org.plovdev.pvva.utils.VersionUtils;
 import org.plovdev.pvvacli.PvvaPaths;
 import org.plovdev.pvvacli.mock.MockDataCreator;
 import org.plovdev.pvvacli.transforms.BuildXmlOutUtils;
-import org.plovdev.pvvacli.utils.VersionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
