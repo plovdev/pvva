@@ -1,9 +1,11 @@
 package org.plovdev.pvva.read;
 
+import org.jspecify.annotations.NonNull;
 import org.plovdev.pvva.models.PVVAHeader;
 import org.plovdev.pvva.models.PVVAHost;
 import org.plovdev.pvva.models.PluginJson;
 import org.plovdev.pvva.models.chunks.Chunk;
+import org.plovdev.pvva.models.chunks.ChunkType;
 import org.plovdev.pvva.models.configs.httpconfig.HttpConfig;
 import org.plovdev.pvva.models.configs.resourceconfig.ResourceConfig;
 import org.plovdev.pvva.models.parsers.MainParser;
@@ -13,11 +15,13 @@ import org.plovdev.pvva.transforms.HttpConfigTransformer;
 import org.plovdev.pvva.transforms.PluginJsonTransformer;
 import org.plovdev.pvva.transforms.ResourceConfigTransformer;
 import org.plovdev.pvva.transforms.parser.ParserTransformer;
-import org.plovdev.pvva.utils.IOUtils;
+import org.plovdev.pvva.utils.DataCompressor;
+import org.plovdev.pvva.utils.VersionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -66,7 +70,7 @@ public class ByteArrayPVVAReader implements PVVAReader {
 
         int minAppVersion = header.getMinAppVersion();
         int maxAppVersion = header.getMaxAppVersion();
-        return (minAppVersion <= appVersion && appVersion >= maxAppVersion);
+        return VersionUtils.isCompatibleWithAppVersion(minAppVersion, maxAppVersion, appVersion);
     }
 
     @Override
@@ -77,7 +81,7 @@ public class ByteArrayPVVAReader implements PVVAReader {
 
         if (checkMagic()) {
             pvvaReader.position(4);
-            PVVAHeader header = null;
+            PVVAHeader header = readHeader();
             if (header.getVersion() != SUPPORTED_VERSION) {
                 throw new IllegalArgumentException("Plugin version is not supported by this reader. Plugin version: " + header.getVersion() + " reader version: " + supportedVersion());
             }
@@ -90,6 +94,23 @@ public class ByteArrayPVVAReader implements PVVAReader {
         } else {
             throw new IllegalArgumentException("Not a pvva file.");
         }
+    }
+
+    private @NonNull PVVAHeader readHeader() {
+        byte version = pvvaReader.get();
+        byte flag = pvvaReader.get();
+        int buildId = pvvaReader.getInt();
+
+        byte idLength = pvvaReader.get();
+        int minAppVersion = pvvaReader.getInt();
+        int maxAppVersion = pvvaReader.getInt();
+        int tableOffset = pvvaReader.getInt();
+
+        byte[] pluginIdBytes = new byte[idLength];
+        pvvaReader.get(pluginIdBytes);
+        String pluginId = new String(pluginIdBytes, StandardCharsets.US_ASCII);
+
+        return new PVVAHeader(version, flag, buildId, idLength, minAppVersion, maxAppVersion, tableOffset, pluginId);
     }
 
     @Override
@@ -107,24 +128,36 @@ public class ByteArrayPVVAReader implements PVVAReader {
                 log.debug("Header not parsed, read table offset from file.");
                 int tableOffsetField = PVVAHeader.HEADER_SIZE;
                 pvvaReader.position(tableOffsetField);
-                byte[] tableOffsetFieldBuffer = new byte[4];
-                pvvaReader.get(tableOffsetFieldBuffer);
-                tableOffset = IOUtils.bytesToInt(tableOffsetFieldBuffer);
+                tableOffset = pvvaReader.getInt();
             } else {
                 throw new IllegalArgumentException("Not a pvva file.");
             }
         }
 
         pvvaReader.position(tableOffset);
-        byte[] tableHeader = new byte[3];
-        pvvaReader.get(tableHeader);
-        ByteBuffer tableHeaderBuffer = ByteBuffer.wrap(tableHeader);
-        short tableSize = tableHeaderBuffer.getShort();
-        byte entriesCount = tableHeaderBuffer.get();
-
-        EntriesOffsetTable table = new EntriesOffsetTable(tableSize, entriesCount, Map.of());
+        short tableSize = pvvaReader.getShort();
+        byte entriesCount = pvvaReader.get();
+        EntriesOffsetTable table = new EntriesOffsetTable(tableSize, entriesCount, readTableEntries(tableSize));
         readedOffsetTable.set(table);
         return table;
+    }
+
+    private @NonNull Map<String, TableEntry> readTableEntries(short tableSize) {
+        ByteBuffer tableEntriesBuffer = pvvaReader.slice(pvvaReader.position(), tableSize).flip().asReadOnlyBuffer();
+        Map<String, TableEntry> entryMap = new HashMap<>();
+
+        while (tableEntriesBuffer.hasRemaining()) {
+            byte idLen = tableEntriesBuffer.get();
+            int entryOffset = tableEntriesBuffer.getInt();
+
+            byte[] entryIdBytes = new byte[idLen];
+            tableEntriesBuffer.get(entryIdBytes);
+            String entryId = new String(entryIdBytes, StandardCharsets.US_ASCII);
+
+            entryMap.put(entryId, new TableEntry(idLen, entryOffset, entryId));
+        }
+
+        return entryMap;
     }
 
     @Override
@@ -152,6 +185,7 @@ public class ByteArrayPVVAReader implements PVVAReader {
         ResourceConfig resourceConfig = null;
         HttpConfig httpConfig = null;
         MainParser mainParser = null;
+
         for (String chunkId : entryMap.keySet()) {
             Chunk extracted = extractChunk(chunkId);
             chunks.put(chunkId, extracted);
@@ -201,12 +235,31 @@ public class ByteArrayPVVAReader implements PVVAReader {
             }
             Map<String, TableEntry> entryMap = table.entries();
             if (entryMap.containsKey(id)) {
-                //return PVVAReaderHelper.readChunk(entryMap.get(id).entryOffset(), pvvaReader);
-                return null;
+                return readChunk(entryMap.get(id).entryOffset());
             } else {
                 throw new NoSuchElementException("Can't find chunk " + id);
             }
         });
+    }
+
+    private Chunk readChunk(int offset) {
+        pvvaReader.position(offset);
+
+        byte[] chunkTypeBytes = new byte[4];
+        pvvaReader.get(chunkTypeBytes);
+        ChunkType chunkType = ChunkType.ofString(new String(chunkTypeBytes, StandardCharsets.US_ASCII));
+
+        int chunkSize = pvvaReader.getInt();
+        byte chunkIdLength = pvvaReader.get();
+        byte[] chunkIdBytes = new byte[chunkIdLength];
+        pvvaReader.get(chunkIdBytes);
+        String chunkId = new String(chunkIdBytes, StandardCharsets.US_ASCII);
+
+        byte[] compressedChunkContent = new byte[chunkSize];
+        pvvaReader.get(compressedChunkContent);
+        byte[] chunkContent = DataCompressor.decompress(compressedChunkContent);
+
+        return new Chunk(chunkType, chunkSize, chunkIdLength, chunkId, chunkContent);
     }
 
     @Override
@@ -253,7 +306,7 @@ public class ByteArrayPVVAReader implements PVVAReader {
 
     @Override
     public synchronized ByteBuffer getReadData() {
-        return pvvaReader.slice(0, pvvaReader.position()).flip();
+        return pvvaReader.slice(0, pvvaReader.position()).flip().asReadOnlyBuffer();
     }
 
     @Override

@@ -33,22 +33,22 @@ public final class PVVAReaderHelper {
         byte flag = buffer.get();
         int buildId = buffer.getInt();
 
-        byte idlength = buffer.get();
+        byte idLength = buffer.get();
         int minAppVersion = buffer.getInt();
         int maxAppVersion = buffer.getInt();
         int tableOffset = buffer.getInt();
 
-        ByteBuffer idBuffer = ByteBuffer.allocate(idlength);
+        ByteBuffer idBuffer = ByteBuffer.allocate(idLength);
         int readId = pvvaReader.read(idBuffer);
-        if (readId != idlength) {
-            throw new IllegalStateException("Invalid plugin id bytes read: " + readId + "/" + idlength);
+        if (readId != idLength) {
+            throw new IllegalStateException("Invalid plugin id bytes read: " + readId + "/" + idLength);
         }
         idBuffer.flip();
-        byte[] plugId = new byte[idlength];
+        byte[] plugId = new byte[idLength];
         idBuffer.get(plugId);
         String pluginId = new String(plugId, StandardCharsets.US_ASCII);
 
-        return new PVVAHeader(version, flag, buildId, idlength, minAppVersion, maxAppVersion, tableOffset, pluginId);
+        return new PVVAHeader(version, flag, buildId, idLength, minAppVersion, maxAppVersion, tableOffset, pluginId);
     }
 
     public static @NonNull Map<String, TableEntry> readTableEntries(short tableSize, @NonNull FileChannel pvvaReader) throws IOException {
