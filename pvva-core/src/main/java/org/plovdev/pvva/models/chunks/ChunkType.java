@@ -5,7 +5,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.NoSuchElementException;
 
 public enum ChunkType {
-    SYSTEM("SYST"), CONFIG("CONF"), SCRIPT("SRPT"), RESOURCE("RESC");
+    SYSTEM("SYST"), CONFIG("CONF"), SCRIPT("SCRT"), RESOURCE("RESC");
 
     public static @NonNull ChunkType ofString(String str) {
         for (ChunkType type : values()) {

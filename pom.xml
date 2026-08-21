@@ -15,7 +15,7 @@
     </modules>
 
     <properties>
-        <revision>1.8</revision>
+        <revision>1.9</revision>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,7 +45,7 @@
                 <configuration>
                     <updatePomFile>true</updatePomFile>
                     <flattenMode>resolveCiFriendliesOnly</flattenMode>
-                    <flattenedPomFilename>${project.build.directory}/.flattened-pom.xml</flattenedPomFilename>
+                    <flattenedPomFilename>target/.flattened-pom.xml</flattenedPomFilename>
                 </configuration>
                 <executions>
                     <execution>

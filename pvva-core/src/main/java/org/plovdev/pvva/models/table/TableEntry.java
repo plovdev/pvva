@@ -1,4 +1,6 @@
 package org.plovdev.pvva.models.table;
 
-public record TableEntry(byte entryIdLength, int entryOffset, String entrId) {
+import org.plovdev.pvva.models.chunks.ChunkType;
+
+public record TableEntry(ChunkType chunkType, int chunkSize, byte entryIdLength, int entryOffset, String entryId) {
 }

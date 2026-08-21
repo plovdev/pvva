@@ -62,52 +62,41 @@ public final class PVVAReaderHelper {
         Map<String, TableEntry> entryMap = new HashMap<>();
 
         while (tableBody.hasRemaining()) {
+            byte[] chunkTypeBytes = new byte[4];
+            tableBody.get(chunkTypeBytes);
+            ChunkType chunkType = ChunkType.ofString(new String(chunkTypeBytes, StandardCharsets.US_ASCII));
+
+            int chunkSize = tableBody.getInt();
             byte idLen = tableBody.get();
             int entryOffset = tableBody.getInt();
 
             byte[] entryIdBytes = new byte[idLen];
             tableBody.get(entryIdBytes);
             String entryId = new String(entryIdBytes, StandardCharsets.US_ASCII);
-            entryMap.put(entryId, new TableEntry(idLen, entryOffset, entryId));
+
+            entryMap.put(entryId, new TableEntry(chunkType, chunkSize, idLen, entryOffset, entryId));
         }
 
         return entryMap;
     }
 
     @Contract("_, _ -> new")
-    public static @NonNull Chunk readChunk(int chunkOffset, @NonNull FileChannel pvvaReader) throws IOException {
-        pvvaReader.position(chunkOffset);
-        ByteBuffer chunkHeader = ByteBuffer.allocate(9);
-        int headerRead = pvvaReader.read(chunkHeader);
-        if (headerRead != 9) {
-            throw new IllegalStateException("Read not 9 bytes");
-        }
-        chunkHeader.flip();
+    public static @NonNull Chunk readChunk(@NonNull TableEntry entry, @NonNull FileChannel pvvaReader) throws IOException {
+        pvvaReader.position(entry.entryOffset());
 
-        byte[] chunkTypeBytes = new byte[4];
-        chunkHeader.get(chunkTypeBytes);
-        int chunkSize = chunkHeader.getInt();
-        byte chunkIdLength = chunkHeader.get();
-
-        int bodySize = chunkIdLength + chunkSize;
-        ByteBuffer chunkBody = ByteBuffer.allocate(bodySize);
+        int chunkSize = entry.chunkSize();
+        ByteBuffer chunkBody = ByteBuffer.allocate(chunkSize);
         int bodyRead = pvvaReader.read(chunkBody);
-        if (bodyRead != bodySize) {
+        if (bodyRead != chunkSize) {
             throw new IllegalStateException("Read not " + bodyRead + " bytes in chunk body");
         }
         chunkBody.flip();
 
-        byte[] chunkIdBytes = new byte[chunkIdLength];
-        chunkBody.get(chunkIdBytes);
-
         byte[] compressedChunkContent = new byte[chunkSize];
         chunkBody.get(compressedChunkContent);
-
-        String chunkTypeStr = new String(chunkTypeBytes, StandardCharsets.US_ASCII);
-        String chunkId = new String(chunkIdBytes, StandardCharsets.US_ASCII);
         byte[] chunkContent = DataCompressor.decompress(compressedChunkContent);
 
-        return new Chunk(ChunkType.ofString(chunkTypeStr), chunkSize, chunkIdLength, chunkId, chunkContent);
+        return new Chunk(entry.chunkType(), chunkSize, entry.entryIdLength(), entry.entryId(), chunkContent);
     }
 
     public static @NonNull ByteBuffer getChannelData(@NonNull FileChannel channel) throws IOException {

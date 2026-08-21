@@ -10,6 +10,7 @@ import org.plovdev.pvva.models.chunks.Chunk;
 import org.plovdev.pvva.models.chunks.ChunkType;
 import org.plovdev.pvva.models.configs.httpconfig.HttpConfig;
 import org.plovdev.pvva.models.table.EntriesOffsetTable;
+import org.plovdev.pvva.models.table.TableEntry;
 import org.plovdev.pvva.read.DefaultPVVAReader;
 import org.plovdev.pvva.read.PVVAReader;
 import org.plovdev.pvva.transforms.HttpConfigTransformer;
@@ -75,16 +76,28 @@ public class ExtractEntryHandler extends CommandHandler {
 
         Path pvva = Path.of(info.getFlag("-i"));
         try (PVVAReader reader = new DefaultPVVAReader(pvva)) {
+            EntriesOffsetTable table = reader.parseOffsetTable();
             if (info.hasFlag("v")) {
-                PVVAHost host = reader.readVideoAdapter();
-                host.chunkMap().values().forEach(this::printChunkHeader);
+                table.entries().values().forEach(this::printTableEntry);
             } else {
-                EntriesOffsetTable table = reader.parseOffsetTable();
                 table.entries().keySet().forEach(id -> out.println("ID: " + id));
             }
         } catch (Exception e) {
-            log.error("Error process {}:", pvva, e);
+            log.error("Error process {} entries:", pvva, e);
         }
+    }
+
+    private void printTableEntry(@NonNull TableEntry entry) {
+        ChunkType chunkType = entry.chunkType();
+        int offset = entry.entryOffset();
+        int compressedSize = entry.chunkSize();
+        String chunkId = entry.entryId();
+
+        out.println("Chunk Offset: " + offset);
+        out.println("Chunk ID: " + chunkId);
+        out.println("Chunk Type: " + chunkType.name());
+        out.println("Chunk compressed size: " + compressedSize);
+        out.println();
     }
 
     private void printChunkHeader(@NonNull Chunk chunk) {

@@ -6,6 +6,7 @@ public final class PVVAHeader {
     public static final String MAGIC_NUMBER = "PVVA";
     public static final byte[] MAGIC_NUMBER_BYTES = MAGIC_NUMBER.getBytes(StandardCharsets.US_ASCII);
     public static final int HEADER_SIZE = 19;
+    public static final int SIGN_SIZE = 64;
     public static final int ABS_HEADER_SIZE = MAGIC_NUMBER.length() + HEADER_SIZE;
 
     private byte version;

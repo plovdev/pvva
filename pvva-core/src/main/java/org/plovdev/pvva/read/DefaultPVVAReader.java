@@ -28,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.plovdev.pvva.models.PVVAHeader.SIGN_SIZE;
+
 public class DefaultPVVAReader implements PVVAReader {
     private static final Logger log = LoggerFactory.getLogger(DefaultPVVAReader.class);
     private static final byte SUPPORTED_VERSION = 2;
@@ -231,7 +233,7 @@ public class DefaultPVVAReader implements PVVAReader {
                 }
                 Map<String, TableEntry> entryMap = table.entries();
                 if (entryMap.containsKey(id)) {
-                    return PVVAReaderHelper.readChunk(entryMap.get(id).entryOffset(), pvvaReader);
+                    return PVVAReaderHelper.readChunk(entryMap.get(id), pvvaReader);
                 } else {
                     throw new NoSuchElementException("Can't find chunk " + id);
                 }
@@ -268,13 +270,12 @@ public class DefaultPVVAReader implements PVVAReader {
             header = parseHeader();
         }
 
-        int signSize = 64;
         long totalSize = pvvaReader.size();
-        long signOffset = totalSize - signSize;
+        long signOffset = totalSize - SIGN_SIZE;
         pvvaReader.position(signOffset);
-        ByteBuffer signBuffer = ByteBuffer.allocate(signSize);
+        ByteBuffer signBuffer = ByteBuffer.allocate(SIGN_SIZE);
         int signRead = pvvaReader.read(signBuffer);
-        if (signRead != signSize) {
+        if (signRead != SIGN_SIZE) {
             throw new IllegalStateException("Read not 64 bytes in signature");
         }
         byte[] signature = new byte[64];

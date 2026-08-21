@@ -7,7 +7,7 @@ public final class VersionUtils {
     }
 
     public static boolean isCompatibleWithAppVersion(int minAppVersion, int maxAppVersion, int appVersion) {
-        return (minAppVersion <= appVersion && appVersion >= maxAppVersion);
+        return (minAppVersion <= appVersion && appVersion <= maxAppVersion);
     }
 
     public static int versionToInt(@NonNull String version) {

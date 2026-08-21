@@ -62,6 +62,8 @@ Plugin ID                                                 // nbytes
 table size                                                // 2bytes
 entries count                                             // 1byte
 -------------
+entry chunk type                                          // 4bytes
+entry chunk size                                          // 4bytes
 entry id length                                           // 1byte
 entry offset                                              // 4bytes
 entry id                                                  // nbytes
@@ -72,11 +74,7 @@ plugin-json                                               // chunk
 // other requires chunks
 
 -------------
-CHUNK-TYPE                                                // 4bytes
-CHUNK-SIZE                                                // 4byte
-CHUNK-ID length                                           // 1byte
-CHUNK-ID                                                  // nbyte
-CHUNK-CONTENT(compressed by zlib format)                  // nbytes
+CHUNK-CONTENT(compressed by zlib)                  // nbytes
 -------------
 Plugin signature                                          // 64bytes
 ```
@@ -115,6 +113,8 @@ Current BuildID < Available BuildID ? load update : not load update.
 
 Тело(Список записей)
 
+- `entry chunk type` - Тип чанка(SYSTEM, CONFIG, SCRIPT, etc).
+- `entry chunk size` - Размер чанка.
 - `entry id length(1 byte)` - Длина ID записи(chunk id).
 - `entry offset(4 byte)` - **Абсолютное** смещение до конкретного чанка.
 - `entry(chunk) id` - Уникальный ID записи(чанка).
@@ -139,10 +139,7 @@ Current BuildID < Available BuildID ? load update : not load update.
 
 Затем идут чанки(файл-блоки). Это `.json`, `.lua` и тд.
 
-`CHUNK-TYPE` - Тип чанка(SYSTEM, CONFIG, etc.)
-`CHUNK-SIZE` - размер данных чанка.
-`CHUNK-ID length` - Длина имени чанка.
-`CHUNK-ID` - имя чанка.
+CHUNK:
 `CHUNK-CONTENT` - сам чанк.
 
 В самом конце плагина **обязательно**(с версии формата 2) поле signature которое является цифровой подписью плагина.
