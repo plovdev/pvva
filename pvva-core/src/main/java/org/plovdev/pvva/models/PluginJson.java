@@ -21,9 +21,9 @@ public final class PluginJson {
             @NonNull String title,
             @NonNull String version,
 
-            @Nullable String description,
+            @NonNull String description,
             @Nullable String autoUpdateUrl,
-            @Nullable String author,
+            @NonNull String author,
             @NonNull String developerId,
             @Nullable String authorPage,
             @Nullable String licenseUrl,
@@ -49,19 +49,18 @@ public final class PluginJson {
         return version;
     }
 
+    public @NonNull String description() {
+        return description;
+    }
+
+    public @NonNull String author() {
+        return author;
+    }
 
     //===NULLABLE===\\
 
-    public @NonNull Optional<String> description() {
-        return Optional.ofNullable(description);
-    }
-
     public @NonNull Optional<String> autoUpdateUrl() {
         return Optional.ofNullable(autoUpdateUrl);
-    }
-
-    public @NonNull Optional<String> author() {
-        return Optional.ofNullable(author);
     }
 
     public @NonNull String developerId() {

@@ -73,7 +73,7 @@ public final class PluginJsonTransformer {
         JsonObject commons = new JsonObject();
         commons.addProperty(TITLE, json.title());
         commons.addProperty(VERSION, json.version());
-        json.description().ifPresent(description -> commons.addProperty(DESCRIPTION, description));
+        commons.addProperty(DESCRIPTION, json.description());
         pluginJson.add(COMMONS, commons);
 
         JsonObject autoUpdate = new JsonObject();
@@ -81,7 +81,7 @@ public final class PluginJsonTransformer {
         pluginJson.add(AUTO_UPDATE, autoUpdate);
 
         JsonObject legal = new JsonObject();
-        json.author().ifPresent(author -> legal.addProperty(AUTHOR, author));
+        legal.addProperty(AUTHOR, json.author());
         legal.addProperty(DEVELOPER_ID, json.developerId());
         json.authorPage().ifPresent(page -> legal.addProperty(AUTHOR_PAGE, page));
         json.licenseUrl().ifPresent(url -> legal.addProperty(LICENSE, url));

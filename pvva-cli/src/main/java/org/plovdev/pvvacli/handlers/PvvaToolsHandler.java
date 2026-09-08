@@ -49,7 +49,7 @@ public class PvvaToolsHandler extends CommandHandler {
                 appendString(builder, "Plugin Name", pluginJson.title());
                 appendString(builder, "Plugin Version", pluginJson.version());
                 pluginJson.autoUpdateUrl().ifPresent(url -> appendString(builder, "Autoupdate URL", url));
-                pluginJson.author().ifPresent(author -> appendString(builder, "Author", author));
+                appendString(builder, "Author", pluginJson.author());
                 appendString(builder, "Developer ID", pluginJson.developerId());
                 pluginJson.authorPage().ifPresent(authorPage -> appendString(builder, "Author Page", authorPage));
                 pluginJson.licenseUrl().ifPresent(license -> appendString(builder, "License", license));
