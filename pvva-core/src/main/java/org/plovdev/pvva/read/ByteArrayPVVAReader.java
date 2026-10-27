@@ -144,7 +144,7 @@ public class ByteArrayPVVAReader implements PVVAReader {
     }
 
     private @NonNull Map<String, TableEntry> readTableEntries(short tableSize) {
-        ByteBuffer tableEntriesBuffer = pvvaReader.slice(pvvaReader.position(), tableSize).flip();
+        ByteBuffer tableEntriesBuffer = pvvaReader.slice(pvvaReader.position(), tableSize);
         Map<String, TableEntry> entryMap = new HashMap<>();
 
         while (tableEntriesBuffer.hasRemaining()) {
