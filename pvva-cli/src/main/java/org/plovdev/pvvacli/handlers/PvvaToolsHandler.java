@@ -10,9 +10,9 @@ import org.plovdev.pvva.models.PluginJson;
 import org.plovdev.pvva.models.configs.resourceconfig.ResourceConfig;
 import org.plovdev.pvva.read.DefaultPVVAReader;
 import org.plovdev.pvva.read.PVVAReader;
+import org.plovdev.pvva.utils.MockUtils;
 import org.plovdev.pvva.utils.VersionUtils;
 import org.plovdev.pvvacli.PvvaPaths;
-import org.plovdev.pvvacli.mock.MockDataCreator;
 import org.plovdev.pvvacli.transforms.BuildXmlOutUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,10 +95,10 @@ public class PvvaToolsHandler extends CommandHandler {
 
         try {
             PvvaPaths.preparePaths(outputDir);
-            Files.writeString(outputDir.resolve(PvvaPaths.PLUGIN_JSON), MockDataCreator.mockPluginJson());
-            Files.writeString(outputDir.resolve(PvvaPaths.RESOURCE_CONFIG), MockDataCreator.mockResourceConfig());
-            Files.writeString(outputDir.resolve(PvvaPaths.HTTP_CONFIG), MockDataCreator.mockHttpConfig());
-            Files.writeString(outputDir.resolve(PvvaPaths.MAIN_PARSER), MockDataCreator.mockMainParser());
+            Files.writeString(outputDir.resolve(PvvaPaths.PLUGIN_JSON), MockUtils.mockPluginJson());
+            Files.writeString(outputDir.resolve(PvvaPaths.RESOURCE_CONFIG), MockUtils.mockResourceConfig());
+            Files.writeString(outputDir.resolve(PvvaPaths.HTTP_CONFIG), MockUtils.mockHttpConfig());
+            Files.writeString(outputDir.resolve(PvvaPaths.MAIN_PARSER), MockUtils.mockMainParser());
 
             PVVAHeader mockHeader = new PVVAHeader((byte) 2, (byte) 0, VersionUtils.generateBuildId(), (byte) 0, 20000, 30000, 0, "");
             BuildXmlOutUtils.restoreBuildXml(mockHeader, outputDir.resolve(PvvaPaths.BUILD_XML));

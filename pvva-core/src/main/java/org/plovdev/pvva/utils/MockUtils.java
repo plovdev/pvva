@@ -1,12 +1,18 @@
-package org.plovdev.pvvacli.mock;
+package org.plovdev.pvva.utils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NonNull;
+import org.plovdev.pvva.models.PVVAHeader;
+import org.plovdev.pvva.models.PVVAHost;
 import org.plovdev.pvva.models.configs.httpconfig.HttpClientType;
 import org.plovdev.pvva.models.configs.httpconfig.RetryPolicy;
-import org.plovdev.pvva.utils.PVVAJsonSerializer;
+import org.plovdev.pvva.models.parsers.MainParser;
+import org.plovdev.pvva.models.table.EntriesOffsetTable;
+import org.plovdev.pvva.transforms.HttpConfigTransformer;
+import org.plovdev.pvva.transforms.PluginJsonTransformer;
+import org.plovdev.pvva.transforms.ResourceConfigTransformer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,21 +21,21 @@ import static org.plovdev.pvva.transforms.HttpConfigTransformer.*;
 import static org.plovdev.pvva.transforms.PluginJsonTransformer.*;
 import static org.plovdev.pvva.transforms.ResourceConfigTransformer.*;
 
-public final class MockDataCreator {
+public class MockUtils {
     @Contract(pure = true)
     public static @NonNull String mockPluginJson() {
         JsonObject pluginJson = new JsonObject();
 
         JsonObject commons = new JsonObject();
-        commons.addProperty(TITLE, "");
-        commons.addProperty(VERSION, "1.0.0-SNAPSHOT");
-        commons.addProperty(DESCRIPTION, "");
+        commons.addProperty(TITLE, "--no title--");
+        commons.addProperty(VERSION, "--no version--");
+        commons.addProperty(DESCRIPTION, "--no description--");
         pluginJson.add(COMMONS, commons);
 
         JsonObject legal = new JsonObject();
-        legal.addProperty(AUTHOR, System.getProperty("user.name"));
-        legal.addProperty(DEVELOPER_ID, "");
-        legal.addProperty(LICENSE, "http://unlicense.org");
+        legal.addProperty(AUTHOR, "--no author--");
+        legal.addProperty(DEVELOPER_ID, "--no eveloper id--");
+        legal.addProperty(LICENSE, "--no license--");
         pluginJson.add(LEGAL, legal);
 
         return PVVAJsonSerializer.GLOBAL_JSON_PP.toJson(pluginJson);
@@ -37,41 +43,41 @@ public final class MockDataCreator {
 
     public static @NonNull String mockResourceConfig() {
         JsonObject root = new JsonObject();
-        root.addProperty(BASE_URL, "https://");
+        root.addProperty(BASE_URL, "https://example.com");
 
         JsonObject main = new JsonObject();
-        main.addProperty(SUPPORTS, true);
+        main.addProperty(SUPPORTS, false);
         main.addProperty(ENDPOINT, "/");
         JsonObject mainSearch = new JsonObject();
-        mainSearch.addProperty(SUPPORTS, true);
+        mainSearch.addProperty(SUPPORTS, false);
         mainSearch.addProperty(ENDPOINT, "/");
         main.add(MAIN_SEARCH, mainSearch);
         root.add(MAIN, main);
 
         JsonObject models = new JsonObject();
-        models.addProperty(SUPPORTS, true);
+        models.addProperty(SUPPORTS, false);
         models.addProperty(ENDPOINT, "/");
         JsonObject model = new JsonObject();
-        model.addProperty(SUPPORTS, true);
+        model.addProperty(SUPPORTS, false);
         model.addProperty(ENDPOINT, "/");
         models.add(MODEL, model);
         JsonObject modelSearch = new JsonObject();
-        modelSearch.addProperty(SUPPORTS, true);
+        modelSearch.addProperty(SUPPORTS, false);
         modelSearch.addProperty(ENDPOINT, "/");
         models.add(MODEL_SEARCH, modelSearch);
         root.add(MODELS, models);
 
         JsonObject categories = new JsonObject();
-        categories.addProperty(SUPPORTS, true);
+        categories.addProperty(SUPPORTS, false);
         categories.addProperty(ENDPOINT, "/");
         JsonObject category = new JsonObject();
-        category.addProperty(SUPPORTS, true);
+        category.addProperty(SUPPORTS, false);
         category.addProperty(ENDPOINT, "/");
         categories.add(CATEGORY, category);
         root.add(CATEGORIES, categories);
 
         JsonObject video = new JsonObject();
-        video.addProperty(SUPPORTS, true);
+        video.addProperty(SUPPORTS, false);
         video.addProperty(ENDPOINT, "/");
         root.add(VIDEO, video);
 
@@ -113,27 +119,39 @@ public final class MockDataCreator {
         Map<String, String> headers = new HashMap<>();
         headers.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36");
         headers.put("Accept", "text/html,application/xml,application/json,text/plain-text");
-        headers.put("Referer", "https://");
+        headers.put("Referer", "https://example.com");
         return headers;
     }
 
     public static @NonNull String mockMainParser() {
         return """
                 function parseVideos(htmlstr)
-                    return nil
+                    local table = {}
+                    return json.toJson(table)
                 end
                 
                 function parseCategories(htmlstr)
-                    return nil
+                    local table = {}
+                    return json.toJson(table)
                 end
                 
                 function parseModels(htmlstr)
-                    return nil
+                    local table = {}
+                    return json.toJson(table)
                 end
                 
                 function parseVideoPage(htmlstr)
-                    return nil
+                    local table = {}
+                    return json.toJson(table)
                 end
                 """;
+    }
+
+    @Contract(" -> new")
+    public static @NonNull PVVAHost mockPVVAHost() {
+        return new PVVAHost(new PVVAHeader((byte) 0, (byte) 0, 0, (byte) 0, -1, -1, 0, ""),
+                new EntriesOffsetTable((short) 0, (byte) 0, Map.of()),
+                PluginJsonTransformer.ofJson(mockPluginJson()), ResourceConfigTransformer.ofJson(mockResourceConfig()),
+                HttpConfigTransformer.ofJson(mockHttpConfig()), new MainParser(mockMainParser()), Map.of(), new byte[64]);
     }
 }
